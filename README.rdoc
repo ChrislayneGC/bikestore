@@ -1,7 +1,6 @@
 == README
 
-Projeto de estudo:
-E-commerce em Rails com:
+Projeto de estudo - E-commerce em Rails com:
   * Integração de pagamento,
   * Integração com AWS S3 para upload de imagens e arquivos,
   * Painel administrativo para inserção de produtos,
