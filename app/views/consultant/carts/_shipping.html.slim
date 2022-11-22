@@ -1,0 +1,212 @@
+.row
+  .col-xs-12.col-sm-6.col-md-6
+    small Selecione o endereço para entrega, caso queira a entrega em outro endereço basta preencher um dos endereços abaixo com os dados desejados.
+    - current_consultant.addresses.each_with_index do |address, index|
+      #accordion.panel-group aria-multiselectable="true" role="tablist"
+        .panel.panel-default
+          #headingOne.panel-heading role="tab"
+            h4.panel-title
+              a aria-controls="collapseOne" aria-expanded="true" data-parent="#accordion" data-toggle="collapse" href="#collapse#{index}" role="button"
+                | Endereço #{address.kind_br}
+          .panel-collapse.collapse.in aria-labelledby="headingOne" role="tabpanel" id="collapse#{index}"
+            .panel-body
+              = simple_form_for @order, url: [:freight_consultant_cart], remote: false, html: {id: 'edit-shipping'}, method: 'post' do |f|
+                = f.input :id, as: 'hidden', input_html: {value:"#{@order.id}"}
+                h4: strong Endereço
+                = f.simple_fields_for :shipping do |ff|
+                  = ff.input :id, as: 'hidden'
+                  = ff.input :order_id, as: 'hidden'
+                  .row
+                    .col-xs-12.col-sm-4.col-md-4
+                      .form-group
+                        = ff.input :zipcode, required: true, input_html: {class: "form-control zipcode", value:"#{ff.object.zipcode.present? ? ff.object.zipcode : address.zipcode}"}
+                    .col-xs-12.col-sm-2.col-md-1
+                      .form-group
+                        label
+                        i(class="pull-left btn btn-default icon icon-search button-labelless" onclick="getAddress('_addresses_attributes_0')" onmouseover="" style="cursor: pointer; margin-top: 4px;")
+                  .form-group= ff.input :street, required: true, input_html: {class: "form-control", value:"#{ff.object.street.present? ? ff.object.street : address.street}"}
+                  .row
+                    .col-xs-12.col-sm-4.col-md-4
+                      .form-group= ff.input :district, required: true, input_html: {class: "form-control", value:"#{ff.object.district.present? ? ff.object.district : address.district}"}
+                    .col-xs-12.col-sm-4.col-md-4
+                      .form-group= ff.input :number, required: true, input_html: {class: "form-control", value:"#{ff.object.number.present? ? ff.object.number : address.number}"}
+                    .col-xs-12.col-sm-4.col-md-4
+                      .form-group= ff.input :kind, required: true, input_html: {class: "form-control", value:"#{ff.object.kind.present? ? ff.object.kind : address.kind}"}
+                  .row
+                    .col-xs-12.col-sm-6.col-md-6
+                      .form-group= ff.input :state, required: true, input_html: {class: "form-control", onchange: "getCities()", value:"#{ff.object.state.present? ? ff.object.state : address.state}"}
+                    .col-xs-12.col-sm-6.col-md-6
+                      .form-group= ff.input :city, required: true, input_html: {class: "form-control", value: "#{ff.object.city.present? ? ff.object.city : address.city}"}
+                  = f.button :submit, "Alterar endereço de entrega", class: "btn btn-lg btn-block btn-primary"
+
+
+
+  .col-xs-12.col-sm-6.col-md-6
+    .row
+      .col-xs-12.col-sm-12.col-md-12
+        h4(style="margin-top: 0;") <strong>Resumo do pedido</strong>
+        table.table.cart-table
+          thead
+            tr
+              th.text-center Item
+              th.text-center(width="150px") Valor R$
+              th.text-center Quantidade
+          tbody
+            - @order.items.each do |item|
+              - item_price = (item.price.to_f * item.quantity)
+              tr
+                td.text-center
+                  = image_tag(item.item.s3_image.present? ? item.item.s3_image : "http://placehold.it/185x185", alt: item.to_s, class: "img-thumbnail", style: 'width: 60px;')
+                  p
+                    strong.cblue #{item.item.name}
+                td.text-center
+                  p
+                    strong.text-block.cgreen= number_to_currency(item.total)
+                  p
+                    small #{number_to_currency(item.price)} un.
+                td.text-center
+                  strong.text-block.cgreen= item.quantity
+          tfoot
+            tr
+              td(colspan="5" class="bclean total-price")
+                <strong>Total: <span class="cgreen btn-mr">#{number_to_currency(@order.total.to_f)}</span></strong>
+    .row
+      .col-xs-12.col-sm-12.col-md-12
+        .freight-result
+          h4(style="margin-top: 0;") <strong>Selecione uma opção de frete</strong>
+          - @freight.each do |freight|
+            .panel.panel-default
+              .panel-header
+                h3 Tipo: #{freight[1].nome}
+              .panel-body
+                p Prazo de entrega: #{freight[1].prazo_entrega} dia(s)
+                p #{number_to_currency(freight[1].valor, unit: "R$", separator: ",", delimiter: "")}
+                = simple_form_for @order, url: [:payment_consultant_cart], method: 'post' do |f|
+                  = f.simple_fields_for :shipping do |ff|
+                    = ff.input :kind, as: 'hidden', input_html: {value: "#{freight[1].nome}"}
+                  = f.submit "Selecionar tipo de entrega e prosseguir", class: "btn btn-info"
+
+
+
+
+= link_to "Clique aqui, para retornar à página inicial", [:root], title: "Retornar à página inicial", class: 'btn btn-default', style: 'margin-top: 15px;'
+
+
+- content_for :script do
+  javascript:
+
+    $( document ).ready(function() {
+      $('.navbar-main').removeClass('navbar-transparent');
+      $('#edit-shipping').validate();
+    });
+
+    function getType(){
+      var type = "order_shipping"
+      return type.toLowerCase();
+    };
+
+    function getAddress(prefix) {
+      //prefix = getType() + prefix;
+      prefix = "order_shipping_attributes"
+      var zipcode = $('.zipcode:first').val().replace('-', '');
+      if(zipcode.length >= 8) {
+        $.ajax({
+          url: 'http://viacep.com.br/ws/'+zipcode+'/json', dataType: 'json', cache: true,
+          beforeSend: function() {
+            $('.zipcode:first').css({background: 'white url("/assets/Bike-loader.gif") no-repeat center right 6px', backgroundSize: '16px'});
+          },
+          success: function(data) {
+            if(data.erro != true){
+              console.log(1);
+              console.log(data);
+              $('.zipcode:first').css({background: 'white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAADiUlEQVR4Xu2ai3ETMRCG4wpCCU4FgQowFSSpAFMBUAFOBYEKSCpIUgGmAqACTAfQAfuDxFyEpH2cTtY5uhlNnLNe+2n170rJ4qg/fwgsOoe/BDoI5wkdRAfxUBS6R3SPeBwecUxmbqg8jUTFr/Tubfj+ELfGczLymsoyAWFF738dOoh3zhNi6RE8IQrhkPIIbIU7Z2gMAr5bxzzBVz6ErXFKxmypPIkRcIAuEt/9ez13EC+dHqTszG6HYaM5g/jo3H00hLlqBPTgmsp5xt3FnjBXjQAE6EEsP/A2/XTf/+B0Ya5bA6II9V9mDASEFZVvGghz2hpcZPB2Y7vcayHMBYQUwpoMurFAmAOIMyeMqRzB2w3xfGWF0DoILkfwdiNCPBsDoWUQUggQR4jnf4coLZgWEyopBNiKMKqOEDFIrYHAEXorXM1R4hiO0RIIaXSADaPFsVUQGgjq9FniYS14hAaCOXPkYOwbBM4OWGEov+QpqgvDASUgMFkkNKpDjMAqyQFq2A3OGewFi2DcaBUOhJ8sVuwNFXMKGxn9E71bCSe+o3oIlaPzhdR4ORCxFWPv/oSGcZcqYTfF8gUtiJzbYnWwVz8LjQ6rvaYX7xVtN1T3UlHfVDXlEV+cK+Y6tUwQhyh4lfQpco6QDJYCcUuNc1dhvm9MFPUkQqoJk+jfdNMkMTpWJwVCE9YwYU5INf35eaLPD1bDtO1yYokVxIpLn5yQaiIExttSeSEduEQ9LnxqhW1Hk1pTGQpp7s9wMRuKHa01gDgQ6Eu7mmizoQKl14oj2prvHTWGh3UlILC/sdLcdVnYt0+dNe0mzR5zoCQg0F5zT2BdmL1sCT9ZKQjUv6ICJZ/qgbaUTOFV89SAQMeSREs1AVd5Sz+rRgmLRgzbaJMiCZSqiVNqQlqPQD/akMrBqJo4lQSBvqQpOAeh2lmCm4jFI9CnNaSG85n8eM0B8N9bQaC9JVkazmtDv0x+vK4BAmNYQ+qO2k564yQFUMIj/BbRXL76cVf0wXqxo7VRVH/M1vADaLPOvaXROSIlQKB/6QmziZwhBqQUCPQtyTqbEsghkJIguIscCOSJaMPuoVJJENwWaU4gp/II3+93+rAMFrVJgZwaRBhFmhXIqUGg/2Gi1axA1gDhzyLwhmYFsgYIjIGzCB7TP4DWDhylo0bt+Rcbr4NwKDuIDuLhruoe0T2ie0Q00vwGi+6UQ4PGkUEAAAAASUVORK5CYII=") no-repeat center right 6px', backgroundSize: '22px'});
+              $('#'+prefix+'_street').val(data.logradouro); $('#'+prefix+'_city').val(data.localidade); $('#'+prefix+'_state').val(data.uf); $('#'+prefix+'_number').focus();
+              disableFields();
+            }else{
+              console.log(2);
+              console.log(data);
+              $('.zipcode:first').css({background: 'white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAACT0lEQVR4Xu3agU3DMBAFULoBbAATsEI3gA3oCIzCCLABbNAVmAA2gBE4g09KoyT23f+XFOkqRU2lxLGf72wnze4iP78Cu3T4E0iIGgkJkRCng0JGREZERsTkRJmpkamRqbFKatzKVY6yPcr2ErRqfZByn2Tby/bOugZzjFCEy1q5QwBGQXiu5X8zMVgQYwTtKCbGEEHLp2EwIOYQmBhTCFQMFKKFwMBYQqBhIBC9CAhGDwIFwwthRfBgWBBgDA+EF8GC4UGAMKwQKEIPBoLgxrBCfMiVrkmLmKmplYGg1fuUnZveulohWBExFRlMBPP6wgpRGhCBUcrVFWNvJ84dZ0YoBXkgIjDQxrvHBj3RC3GOGK5IYECcEwaEgKTGMJTZY4Y1TWAEFsSWkUFBYEJsgUFDYEOsiUFFiIBYA4OOEAURiRGCEAkRgRGGEA3BvHfQKfUgOyFPx5GV5dJ8H4EQihEBEYkQhsGGWAMhBIMJsSYCHYMFsQUCFYMBsSWCYtzLzpv1bm14PApxDgilPfAaA4G4kwq8Ir1APhfC8EIwn0GUBpSP/ouO+LgxPBBshH1t+XFLDCtEBIK+7BFZdjPKrBBfwb3GxrhqCtQDrBCMWaKVxywM0w2aFaL4IRgtBO1AFMOEUC7qgfBi9CKgGGYEBMKKYUXwYrgQUIheDC+CFcONwIBoYaAIvRgQAgtiDoOF0MKAEZgQYww2whwGBYENoRj014NVoX6HvObsnT5Hdfv/PxOi9mFCJMRpOmdEZERkRExOcZkamRqZGpkaS+vfH9T+q0NoDTTRAAAAAElFTkSuQmCC") no-repeat center right 6px', backgroundSize: '22px'});
+               $("#"+getType()+"_addresses_attributes_0_street").val(""); $("#"+getType()+"_addresses_attributes_0_district").val("");  $("#"+getType()+"_addresses_attributes_0_number").focus();
+              enableFields();
+            }
+          },
+          error: function(data) {
+            console.log(3);
+            console.log(data);
+            $('.zipcode:first').css({background: 'white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAACT0lEQVR4Xu3agU3DMBAFULoBbAATsEI3gA3oCIzCCLABbNAVmAA2gBE4g09KoyT23f+XFOkqRU2lxLGf72wnze4iP78Cu3T4E0iIGgkJkRCng0JGREZERsTkRJmpkamRqbFKatzKVY6yPcr2ErRqfZByn2Tby/bOugZzjFCEy1q5QwBGQXiu5X8zMVgQYwTtKCbGEEHLp2EwIOYQmBhTCFQMFKKFwMBYQqBhIBC9CAhGDwIFwwthRfBgWBBgDA+EF8GC4UGAMKwQKEIPBoLgxrBCfMiVrkmLmKmplYGg1fuUnZveulohWBExFRlMBPP6wgpRGhCBUcrVFWNvJ84dZ0YoBXkgIjDQxrvHBj3RC3GOGK5IYECcEwaEgKTGMJTZY4Y1TWAEFsSWkUFBYEJsgUFDYEOsiUFFiIBYA4OOEAURiRGCEAkRgRGGEA3BvHfQKfUgOyFPx5GV5dJ8H4EQihEBEYkQhsGGWAMhBIMJsSYCHYMFsQUCFYMBsSWCYtzLzpv1bm14PApxDgilPfAaA4G4kwq8Ir1APhfC8EIwn0GUBpSP/ouO+LgxPBBshH1t+XFLDCtEBIK+7BFZdjPKrBBfwb3GxrhqCtQDrBCMWaKVxywM0w2aFaL4IRgtBO1AFMOEUC7qgfBi9CKgGGYEBMKKYUXwYrgQUIheDC+CFcONwIBoYaAIvRgQAgtiDoOF0MKAEZgQYww2whwGBYENoRj014NVoX6HvObsnT5Hdfv/PxOi9mFCJMRpOmdEZERkRExOcZkamRqZGpkaS+vfH9T+q0NoDTTRAAAAAElFTkSuQmCC") no-repeat center right 6px', backgroundSize: '22px'});
+             $("#"+getType()+"_addresses_attributes_0_street").val(""); $("#"+getType()+"_addresses_attributes_0_district").val("");  $("#"+getType()+"_addresses_attributes_0_number").focus();
+            enableFields();
+          }
+        });
+      }
+    }
+
+
+    function enableFields(){
+      $("#"+getType()+"_addresses_attributes_0_state_id").prop( "readonly", false );
+      $("#"+getType()+"_addresses_attributes_0_city_id").removeAttr( "readonly");
+      $("#"+getType()+"_addresses_attributes_0_state_id").removeAttr( "readonly");
+      $("#"+getType()+"_addresses_attributes_0_street").prop( "readonly", false );
+      $("#"+getType()+"_addresses_attributes_0_district").prop( "readonly", false );
+      getStates();
+    };
+
+    function disableFields(){
+      if ($("#"+getType()+"_addresses_attributes_0_street").val() != ""){
+        $("#"+getType()+"_addresses_attributes_0_street").prop( "readonly", true );
+      }else{
+        $("#"+getType()+"_addresses_attributes_0_street").prop( "readonly", false );
+      };
+      if ($("#"+getType()+"_addresses_attributes_0_district").val() != ""){
+        $("#"+getType()+"_addresses_attributes_0_district").prop( "readonly", true );
+      }else{
+        $("#"+getType()+"_addresses_attributes_0_district").prop( "readonly", false );
+      };
+
+      $("#"+getType()+"_addresses_attributes_0_state_id").attr("readonly", "readonly");
+      $("#"+getType()+"_addresses_attributes_0_city_id").attr("readonly", "readonly");
+    };
+
+    function getStates(){
+      $("#"+getType()+"_addresses_attributes_0_city_id").empty();
+      $("#"+getType()+"_addresses_attributes_0_state_id").empty();
+      states = $.get('/states', function(data){
+        console.log(data);
+        var options = $("#"+getType()+"_addresses_attributes_0_state_id");
+        for(i = 0; i < data.states.length; i++){
+          options.append($("<option />").val(data.states[i].id).text(data.states[i].name));
+        };
+        var cities = $("#"+getType()+"_addresses_attributes_0_city_id");
+        for(i = 0; i < data.cities.length; i++){
+          cities.append($("<option />").val(data.cities[i].id).text(data.cities[i].name));
+        };
+      });
+    };
+
+    function getCities(){
+      $("#"+getType()+"_addresses_attributes_0_city_id").empty();
+      state = $("#"+getType()+"_addresses_attributes_0_state_id :selected").val();
+      cities = $.get("/cities?id="+state, function(data){
+        console.log(data);
+        var cities = $("#"+getType()+"_addresses_attributes_0_city_id");
+        for(i = 0; i < data.cities.length; i++){
+          cities.append($("<option />").val(data.cities[i].id).text(data.cities[i].name));
+        };
+      });
+    };
+
+    function getCityAndState(state, city){
+      $("#"+getType()+"_addresses_attributes_0_city_id").empty();
+      $("#"+getType()+"_addresses_attributes_0_state_id").empty();
+      response = $.get("/statecity?state="+state+"&city="+city, function(data){
+        console.log(data);
+        var city = $("#"+getType()+"_addresses_attributes_0_city_id");
+        for(i = 0; i < data.cities.length; i++){
+          city.append($("<option />").val(data.cities[i].id).text(data.cities[i].name));
+        };
+        var state = $("#"+getType()+"_addresses_attributes_0_state_id");
+        for(i = 0; i < data.states.length; i++){
+          state.append($("<option />").val(data.states[i].id).text(data.states[i].name));
+        };
+      });
+    };

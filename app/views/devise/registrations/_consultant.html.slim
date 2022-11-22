@@ -1,0 +1,59 @@
+.row
+  .col-xs-12.col-sm-12.col-md-12.text-center
+    h2.title-alt <i class="fa fa-handshake-o"></i> <br>Cadastro de Consultor
+    p Efetue seu cadastro como consultor e receba pedidos dos produtos de seu fornecedor
+
+= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), class: 'form-new') do |f|
+  = f.input :type, as: 'hidden', input_html: { value: "#{@type}", class: 'type' }
+  h3.title-alt.text-center <strong>Dados pessoais</strong>
+  .row
+    .col-xs-12.col-sm-3.col-md-3.nested-image
+      = f.input :image, label: false, as: :file, input_html: {data:{target: 'image'}, onchange: 'javascript:imagePreview(this, event)'}
+    .col-xs-12.col-sm-9.col-md-9
+      .form-group= f.input :name, label: "Nome Completo", required: true, autofocus: true, input_html: {class: "form-control"}
+      .row
+        .col-xs-12.col-sm-6.col-md-6
+          .form-group= f.input :email, label: "E-mail", required: true, autofocus: true, input_html: {class: "form-control"}
+
+        .col-xs-12.col-sm-6.col-md-6
+          .form-group= f.input :phone, label: "Telefone", required: true, input_html: {class: "form-control phone"}
+
+      .row
+        .col-xs-12.col-sm-12.col-md-12
+          .form-group= f.input :identifier, label: "CPF", required: true, input_html: {class: "form-control cpf"}
+      .row
+        .col-xs-12.col-sm-6.col-md-6
+          .form-group.= f.input :password, label: "Senha", required: true, input_html: {class: "form-control"}
+        .col-xs-12.col-sm-6.col-md-6
+          .form-group= f.input :password_confirmation, label: "Confirme a senha", required: true, input_html: {class: "form-control"}
+  h4 <strong>Endereço</strong>
+  = f.simple_fields_for :addresses do |ff|
+    = ff.input :id, as: 'hidden'
+    = ff.input :user_id, as: 'hidden'
+    .row
+      .col-xs-12.col-sm-4.col-md-4
+        .form-group
+          = ff.input :zipcode, required: true, input_html: {class: "form-control zipcode"}
+      .col-xs-12.col-sm-2.col-md-1
+        .form-group
+          label
+          i(class="pull-left btn btn-default icon icon-search button-labelless" onclick="getAddress('_addresses_attributes_0')" onmouseover="" style="cursor: pointer; margin-top: 4px;")
+
+    .form-group= ff.input :street, required: true, input_html: {class: "form-control"}
+    .row
+      .col-xs-12.col-sm-6.col-md-6
+        .form-group= ff.input :district, required: true, input_html: {class: "form-control"}
+      .col-xs-12.col-sm-3.col-md-2
+        .form-group= ff.input :number, required: true, input_html: {class: "form-control"}
+      .col-xs-12.col-sm-3.col-md-4
+        .form-group= ff.input :kind, collection: Address::KIND, include_blank: "Selecione...", required: true, input_html: {class: "form-control"}
+    .row
+      .col-xs-12.col-sm-12.col-md-12
+        .form-group= ff.input :complement, label: "Complemento", input_html: {class: "form-control"}
+    .row
+      .col-xs-12.col-sm-6.col-md-6
+        .form-group= ff.input :state, required: true, input_html: {class: "form-control", onchange: "getCities()"}
+      .col-xs-12.col-sm-6.col-md-6
+        .form-group= ff.input :city, required: true, input_html: {class: "form-control"}
+
+    = f.button :submit, "Cadastrar", class: "btn btn-lg btn-block btn-primary"

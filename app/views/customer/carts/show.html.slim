@@ -1,0 +1,19 @@
+- content_for :head do
+  title Forbike: Meu carrinho
+
+.section.slider-page
+  .container
+    h1 Meu carrinho
+    ol.breadcrumb
+      li.breadcrumb-item= link_to "Home", [:root], title: 'Home'
+      li.breadcrumb-item.active Meu carrinho
+
+.section
+  .container
+    #result-set= render 'cart'
+
+- content_for :script do
+  javascript:
+    $(document).on('ready', function(){
+      $('.navbar-main').removeClass('navbar-transparent');
+    });

@@ -1,0 +1,101 @@
+- content_for :head do
+  title Forbike - Home
+
+section.title-area.m-b-30
+  .container
+    h1 Bem vindo, #{current_admin}
+
+section.dashboard.m-b-30
+  .container.white-bg.p-40.shadow-box
+    .row
+      .col-xs-12.col-sm-3.col-md-3
+        .card
+          .icon
+            i.icon.icon-user
+          .info-area
+            span.text-block= link_to 'Clientes', [:admin, :customers], title: 'Ver todos os clientes'
+            h3.blue-text= Customer.count
+
+      .col-xs-12.col-sm-3.col-md-3
+        .card
+          .icon
+            i.icon.icon-user
+          .info-area
+            span.text-block= link_to 'Consultores', [:admin, :consultants], title: 'Ver todos os consultores'
+            h3= Consultant.count
+
+      .col-xs-12.col-sm-3.col-md-3
+        .card
+          .icon
+            i.icon.icon-user
+          .info-area
+            span.text-block= link_to 'Categorias', [:admin, :categories], title: 'Ver todos os fornecedores'
+            h3= Category.count
+
+      .col-xs-12.col-sm-3.col-md-3
+        .card
+          .icon
+            i.icon.icon-user
+          .info-area
+            span.text-block= link_to 'Sub-categorias', [:admin, :subcategories], title: 'Ver todos os fornecedores'
+            h3= Subcategory.count
+
+
+
+      .col-xs-12.col-sm-3.col-md-3
+        .card
+          .icon
+            i.icon.icon-list
+          .info-area
+            span.text-block= link_to 'Pedidos', [:admin, :orders], title: 'Ver todos os pedidos'
+            h3 0
+    .panel.panel-default.panel-chart
+      .panel-heading
+        h3.panel-title Vendas / Mês
+      .panel-body
+        div(width="75%")
+          canvas#sales-chart
+
+    hr.gap
+
+- content_for :script do
+  javascript:
+
+    $.ajax({
+    url: '/admin/get_order_by_month_report', dataType: 'json', cache: true,
+    beforeSend: function() {
+    },
+    success: function(data) {
+      var report = data;
+
+          var sales = document.getElementById("sales-chart").getContext("2d");
+          var salesData  = {
+            labels: [report[0]["month"], report[1]["month"], report[2]["month"], report[3]["month"], report[4]["month"], report[5]["month"]],
+            datasets: [
+              {
+                label: "My First dataset",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: [30, 50, 43, 45, 30, 60, 62]
+              },
+              {
+                label: "My Second dataset",
+                fillColor: "rgba(151,187,205,0.2)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(151,187,205,1)",
+                data: [report[0]["total"], report[1]["total"], report[2]["total"], report[3]["total"], report[4]["total"], report[5]["total"]]
+              }
+            ]
+          };
+          var salesChart = new Chart(sales).Line(salesData, {responsive: true});
+      },
+      error: function(data) {
+      }
+    });

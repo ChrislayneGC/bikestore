@@ -1,0 +1,87 @@
+doctype html
+html(lang="pt-BR")
+  head
+    meta charset="UTF-8"
+    = yield :head
+
+    = stylesheet_link_tag 'frontend', media: 'all'
+    = csrf_meta_tags
+    link(href="/assets/icon.png" rel="shortcut icon")
+    meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"
+    script src="https://js.iugu.com/v2"
+    link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css"
+
+  body
+    .wrap
+      .header
+        .upper-header.section
+          .container
+            ul.nav.justify-content-end
+              i.fas.fa-phone-volume
+              li.nav-item= link_to 'Contato', [:root], title: 'Contato', class: 'nav-link'
+              - if consultant_signed_in?
+                li.nav-item= link_to "#{current_consultant.name}", [:root], title: "#{current_consultant.name}", class: 'nav-link'
+                li.nav-item= link_to 'Sair', [:destroy, :consultant, :session], method: 'delete', title: 'Sair', class: 'nav-link'
+
+              - unless consultant_signed_in? || customer_signed_in?
+                i.fas.fa-address-card
+                li.nav-item= link_to "Minha Conta", [:new, :customer, :session], title: 'Minha Conta', class: 'nav-link'
+
+        .main-header.section
+          nav.navbar.navbar-expand-lg.fixed-top
+            .container
+              = link_to(image_tag('forbike.png', alt: 'Forbike', height: '90px'), [:root], title: 'Forbike', class: 'navbar-brand')
+              button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navMain" aria-controls="navMain" aria-expanded="false")
+                span.navbar-toggler-icon
+                 i.fas.fa-align-justify
+
+
+
+              .collapse.navbar-collapse#navMain
+                ul.navbar-nav.ml-auto
+                  - if customer_signed_in?
+                    li.nav-item
+                      = link_to "Meus Pedidos", customer_orders_path, title: 'Meus Pedidos', class: 'nav-link'
+
+                    - if cart
+                      li.nav-item= link_to "Carrinho <span class='badge badge-secondary'>#{cart.items.count}</span>".html_safe, [current_customer, cart], method: 'get', title: 'Meu Carrinho', class: 'nav-link'
+                    li.nav-item= link_to "Sair", [:destroy, :customer, :session], method: 'delete', title: 'Sair', class: 'nav-link'
+
+      .main
+        .content
+          / .clearfix
+          / - if flash[:notice]
+          /   .container-fluid
+          /     .row
+          /       .alert.alert-info.text-center(style="border-radius: 0;")
+          /         strong #{flash[:notice]}
+          / - if flash[:alert] || flash[:error]
+          /   .container-fluid
+          /     .row
+          /       .alert.alert-danger.text-center(style="border-radius: 0;")
+          /         strong #{flash[:alert]} #{flash[:error]}
+          = yield
+
+      .footer
+        | © 2016 Forbike. #{link_to "Termos de uso", [:root]}
+
+
+    #modal-window.hidden-print.modal.fade(aria-hidden="true" role="dialog" tabindex="-1" data-backdrop="false")
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(data-dismiss="modal" type="button")
+              span(aria-hidden="true") &times;
+              span.sr-only Fechar
+            h4.modal-title
+          .modal-body
+            img(src="/images/loader.gif" id="loading-indicator" style="display:none")
+          .modal-footer
+            button.btn.btn-default(data-dismiss="modal" type="button") Ok
+
+
+
+    script(src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous")
+    script( src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous")
+    = javascript_include_tag 'frontend', media: 'all'
+    = yield :script

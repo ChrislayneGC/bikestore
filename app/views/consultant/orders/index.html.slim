@@ -1,0 +1,40 @@
+- content_for :head do
+  title Forbike - Pedidos
+
+.title-area
+  .container
+    center: h1 Pedidos
+    ol.breadcrumb
+      li= link_to '<i class="icon icon-home"></i>'.html_safe, [:consultant_show], title: "Página inicial"
+      li.active Pedidos
+
+.section-half
+  .container
+    .row
+      .col-xs-12.col-sm-3.col-md-3
+        = simple_form_for :search, url: [:search, :consultant, :orders], html: {class: "form-vertical"}, method: :get, remote: true do |f|
+          .panel.panel-default.squared
+            .panel-heading
+              span.panel-title Filtrar Pedidos
+            .panel-body
+              .row
+                .col-xs-12.col-sm-12.col-md-12= f.input :init, as: 'text', input_html: { class: "form-control date", value:"#{session[:search_init].present? ? session[:search_init] : Date.today.to_s_br}"}, label: "Data Inicial:", as: 'search', placeholder: '...'
+                .col-xs-12.col-sm-12.col-md-12= f.input :end, input_html: { class: "form-control date",value:"#{session[:search_init].present? ? session[:search_end] : (Date.today.end_of_month).to_s_br}" }, label: "Data Final", as: 'search', placeholder: '...'
+            .panel-footer= f.submit "BUSCAR...", class: "btn btn-default btn-block squared"
+      .col-xs-12.col-sm-9.col-md-9
+        .result-set= render 'orders'
+
+    //.row
+    //  .col-xs-12.col-sm-3.col-md-3
+      //  = simple_form_for :search, url: [:search, :admin, :orders], html: {class: "form-vertical"}, method: :get, remote: true do |f|
+        //  .panel.panel-default.squared
+          //  .panel-heading.squared: span.panel-title Filtrar Pedidos
+          //  .panel-body
+          //    .row
+          //      .col-xs-12.col-sm-12.col-md-12= f.input :criteria, input_html: { class: "form-control" }, label: "Buscar usuário:", as: 'search', placeholder: '...'
+          //  .panel-footer= f.submit "BUSCAR...", class: "btn btn-default btn-block squared"
+      //  hr.gap
+
+    //  .col-xs-12.col-sm-9.col-md-9
+    //    .result-set= render 'orders'
+    //    = paginate @orders

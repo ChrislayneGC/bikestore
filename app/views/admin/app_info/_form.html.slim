@@ -1,0 +1,36 @@
+= simple_form_for @app_info, url:[:admin, @app_info], html: { class: 'form-admin'} do |f|
+  .row
+    .col-9
+      .row
+        .col-8
+          .form-group= f.input :facebook, required: true, input_html: {class:"form-control"}, label: "Facebook"
+        .col-4
+          .form-group= f.input :email, required: true, input_html: {class: "form-control" }, label: "Email"
+        .col-4
+          .form-group= f.input :whatsapp, required: true, input_html: {class: "form-control" }, label: "Whatsapp"
+        .col-4
+          .form-group= f.input :instagram, required: true, input_html: {class: "form-control" }, label: "Instagram"
+      .row
+        .col
+          .form-group= f.input :bio_title , required: false, input_html: {class:"form-control"}, label: "Título"
+      .form-group= f.input :bio, as: :text, required: true, input_html: {class:"form-control summernote"}
+      = f.submit style: "padding-left: 15px; padding-right: 15px;", data: {disable_with: "aguarde..."}
+
+/ - content_for :script do
+/   javascript:
+
+
+/     $( document ).ready(function() {
+/       console.log( "ready!" );
+/       applyInputMasks();
+/     });
+
+/     fileFieldStyle();
+/     function imagePreview(input, event) {
+/       if(input.files && input.files[0]) {
+/         var target = $(input).parents('.nested-fields').find('img');
+/         var reader = new FileReader();
+/         reader.onload = function(e) { target.attr('src', e.target.result).width(200); }
+/       }
+/       reader.readAsDataURL(input.files[0]);
+/     }

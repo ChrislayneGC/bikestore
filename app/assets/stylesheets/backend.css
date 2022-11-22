@@ -1,0 +1,323 @@
+/*
+ *= require bootstrap
+ *= require bootstrap-datepicker
+ *= require font-awesome
+ *= require summernote.css
+ *= require codemirror
+*= require codemirror/themes/solarized
+ *= require_self
+
+
+body {padding-top:3em;}
+ */
+
+
+@import url('https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700,800,900');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800');
+
+html,body{
+  height: 100%;
+}
+body{
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.wrap{
+  min-height: 100%;
+}
+a, button, input[type="submit"]{
+  transition: .32s all;
+  cursor: pointer !important;
+}
+
+.section, .main, .content, .footer, .form-default, .header, .form-admin{
+  width: 100%;
+  height: auto;
+  position: relative;
+  float: left;
+}
+.main{
+  margin-bottom: 30px;
+}
+
+body.admin{
+  background-color: #FAFAFA;
+}
+
+.footer{
+  clear: both;
+}
+
+.login h3{
+  font: 700 24px 'Montserrat', sans-serif;
+}
+.login p{
+  font: 300 14px 'Montserrat', sans-serif;
+}
+
+.login .box-valing{
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.logo-admin{
+  height: 100px;
+  margin-bottom: 30px;
+}
+
+.form-default input[type="text"], .form-default input[type="email"], .form-default input[type="password"], .form-default select{
+  width: 100%;
+  height: 46px !important;
+  border-radius: 0;
+  font: 300 14px 'Open Sans', sans-serif;
+  box-shadow: none !important;
+  outline: none !important;
+  border: solid 1px #EEE;
+}
+
+.form-default .checkbox label{
+  font: 400 14px 'Open Sans', sans-serif;
+}
+.form-default .checkbox label input{
+  margin-right: 8px;
+}
+.form-default input[type="submit"], .form-default button[type="submit"]{
+  border-radius: 2px;
+  font: 700 12px 'Open Sans', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  display: inline-block;
+  background-color: #48b0f7;
+  border-color: #48b0f7;
+}
+.form-default input[type="submit"]:hover, .form-default button[type="submit"]:hover{
+  background-color: #6dc0f9;
+  border-color: #6dc0f9;
+}
+
+.header .upper-header{
+  background-color: #FAFAFA;
+  padding: 8px;
+}
+.header .upper-header p, .header .upper-header .nav-link{
+  color: #7D7A7A;
+  padding: 0;
+  margin: 0;
+  font: 300 12px 'Montserrat', sans-serif;
+}
+.header .upper-header .nav-item{
+  margin-left: 15px;
+}
+.header .upper-header .nav-link:hover{
+  color: #6d5eac;
+}
+.header .main-header{
+  background-color: #FFF;
+  border-bottom: solid 1px rgba(230,230,230,.7);
+}
+.header .main-header .nav-link{
+  font: 500 13px 'Montserrat', sans-serif;
+  color: #7D7A7A;
+}
+.header .main-header .nav-link:hover{
+  color: #252525;
+}
+
+.title-area{
+  background-color: #FFF;
+  padding: 40px 0;
+  margin-bottom: 30px;
+}
+.title-area h1{
+  font: 200 32px 'Montserrat', sans-serif;
+}
+.title-area .breadcrumb{
+  border-radius: 0;
+  padding: 0;
+  background-color: transparent !important;
+  margin: 0;
+}
+.title-area .breadcrumb .breadcrumb-item, .title-area .breadcrumb .breadcrumb-item a{
+  font: 700 10px 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.title-area .breadcrumb .breadcrumb-item.active{
+  color: #0090d9;
+}
+.title-area .breadcrumb .breadcrumb-item a{
+  color: #7d7a7a;
+}
+.title-area .breadcrumb .breadcrumb-item a:hover{
+  color: #6d5eac;
+  text-decoration: none;
+}
+.aside{
+  background-color: #FFF;
+  border: solid 1px rgba(0,0,0,0.07);
+  border-radius: 2px;
+  padding: 20px;
+}
+.aside a{
+  width: 100%;
+  height: auto;
+  position: relative;
+  float: left;
+  margin-bottom: 20px;
+  background-color: #10cfbd;
+  border-color: #10cfbd;
+  border-radius: 2px;
+  text-align: center;
+  color: #FFF;
+  padding: 10px 0;
+  font: 700 12px 'Montserrat', sans-serif;
+  text-transform: uppercase;
+}
+.aside a:hover{
+  text-decoration: none;
+  background-color: #40d9ca;
+  border-color: #40d9ca;
+}
+.form-admin input[type="text"], .form-admin input[type="email"], .form-admin input[type="password"], .form-admin select, .form-admin input[type="search"]{
+  width: 100%;
+  height: 46px !important;
+  border-radius: 0;
+  font: 400 12px 'Open Sans', sans-serif;
+  outline: none;
+  box-shadow: none;
+}
+.form-admin h6{
+  font: 700 14px 'Montserrat', sans-serif;
+}
+.form-admin .form-group label{
+  font: 700 10px 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  color: #444;
+}
+.form-admin input[type="submit"], .form-admin button[type="submit"]{
+  border-radius: 2px;
+  font: 700 12px 'Open Sans', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  display: inline-block;
+  background-color: #48b0f7;
+  border-color: #48b0f7;
+  padding: 10px 0;
+  color: #FFF;
+}
+.form-admin input[type="submit"]:hover, .form-admin button[type="submit"]:hover{
+  background-color: #6dc0f9;
+  border-color: #6dc0f9;
+}
+
+.not-found h3{
+  font: 200 24px 'Montserrat', sans-serif;
+}
+.not-found a{
+  display: inline-block;
+  background-color: #FFF;
+  border: solid 1px #F0F0F0;
+  color: #5E5E5E;
+  padding: 10px 32px;
+  font: 700 10px 'Montserrat', sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+.not-found a:hover{
+  background-color: #FAFAFA;
+  border-color: rgba(98,98,98,0.27);
+  color: #1a1a1a;
+  text-decoration: none;
+}
+.data-accordion .card{
+  border: none;
+  margin-bottom: 20px;
+}
+.data-accordion .card-header{
+  border-radius: 0px !important;
+  background-color: #FFF;
+  border: solid 1px rgba(0,0,0,0.07);
+  font: 300 14px 'Montserrat', sans-serif;
+}
+.data-accordion .card-header a{
+  font-weight: 700;
+  color: #252525;
+  text-decoration: none !important;
+}
+.data-accordion .card-body{
+  border-radius: 0px !important;
+  background-color: #FFF;
+  border: solid 1px rgba(0,0,0,0.07);
+  border-top: none;
+}
+.data-accordion .card-body p{
+  font: 300 13px 'Montserrat', sans-serif;
+}
+.data-accordion .card-body h4{
+  font: 700 16px 'Montserrat', sans-serif;
+}
+.data-accordion .card-body table thead th{
+  font: 700 11px 'Montserrat', sans-serif;
+  text-transform: uppercase;
+}
+.data-accordion .card-body .edit{
+  background-color: #FFF;
+  border: solid 1px #F0F0F0;
+  padding: 8px 32px;
+  border-radius: 2px;
+  color: #5E5E5E;
+  font: 700 12px 'Montserrat', sans-serif;
+  text-transform: uppercase;
+}
+.data-accordion .card-body .edit:hover{
+  background-color: #FAFAFA;
+  border-color: rgba(98,98,98,0.27);
+  color: #1a1a1a;
+  text-decoration: none;
+}
+.form-admin .form-check label{
+  font: 300 14px 'Montserrat', sans-serif;
+}
+.form-admin .form-check label input{
+  margin-right: 8px !important;
+}
+.data-table thead th{
+  font: 700 11px 'Montserrat', sans-serif;
+  text-transform: uppercase;
+}
+.data-table tbody tr td{
+  background-color: #FFF;
+  font: 300 14px 'Montserrat', sans-serif;
+}
+.data-table tbody tr td a{
+  color: #7D7A7A;
+}
+.data-table tbody tr td a:hover{
+  color: #000;
+  text-decoration: none;
+}
+nav.pagination{
+  width: 100%;
+  height: auto;
+  position: relative;
+  float: left;
+}
+nav.pagination span{
+  margin: 0 4px;
+  font: 700 12px 'Montserrat', sans-serif;
+  color: #7D7A7A;
+}
+nav.pagination span a{
+  color: #7D7A7A;
+}
+nav.pagination span.current{
+  color: #252525;
+}
+nav.pagination span a:hover{
+  text-decoration: none;
+  color: #6d5eac;
+}
+.navbar-brand img{
+  height: 60px;
+}

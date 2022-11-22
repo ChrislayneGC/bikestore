@@ -1,0 +1,84 @@
+- content_for :head do
+  title Forbike | #{@item.name}
+  meta name="description" content=""
+
+.section.slider-page
+  .container
+    h1 #{@item.name}
+    ol.breadcrumb
+      li.breadcrumb-item= link_to "Home", [:root], title: 'Home'
+      li.breadcrumb-item= link_to "#{@category.name}", [@category], title: "#{@category.name}"
+      li.breadcrumb-item= link_to "#{@subcategory.name}", [@subcategory], title: "#{@subcategory.name}"
+      li.breadcrumb-item.active #{@item.name}
+
+.section.mb-90
+  .container
+    .row
+      .col-12.col-sm-3.col-md-3
+        
+        - if @item.s3_image.present?
+          = link_to image_tag(@item.s3_image, alt: @item.name, border: 0, class:'img-fluid' ), @item.s3_image, data: { toggle: 'lightbox' }
+        - else
+          = link_to image_tag(@item.image.url, alt: @item.name, border: 0, class:'img-fluid' ), @item.image.url, data: { toggle: 'lightbox' }
+
+        .row
+          - if @item.images.present?
+            - @item.images.each do |image|
+              .col-xs-6.col-sm-6.col-md-6
+                - if image.s3_image.present?
+                  = link_to image_tag(image.s3_image, alt: @item.name, border: 0, class:'img-fluid' ),image.s3_image, data: { toggle: 'lightbox' }
+                - else
+                  = link_to image_tag(image.image.url, alt: @item.name, border: 0, class:'img-fluid' ), image.image.url, data: { toggle: 'lightbox' }
+
+
+      .col-12.col-sm-9.col-md-9.item-details
+        h2= @item.name
+        p= @item.description
+
+        - if @item.text
+          = @item.text.html_safe
+        br
+
+        h3= number_to_currency(@item.price)
+
+        - if current_customer
+          = link_to "Adicionar ao Carrinho", [:add_item, item_id: @item.slug], class: "btn-add", title: @item.name, remote: true, data: {toggle: 'modal', target: '#modalWindow'}
+        - else
+          = link_to "Adicionar ao Carrinho", [:new, :customer, :session], class: "btn-add", title: @item.name
+
+
+    .section.section-related
+      h3 Você também vai gostar:
+      .row
+        .products-wrap.section
+          .row
+            - related_items(@item).each do |related_item|
+              .col-12.col-sm-4.col-md-3
+                .product-item.section
+                  = link_to(image_tag(related_item.s3_image, alt: related_item.name, class: 'img-fluid'), [related_item], title: related_item.name)
+                  h3= link_to "#{related_item.name}", [related_item], title: related_item.name
+                  h4= number_to_currency(related_item.price)
+
+                  - if current_customer
+                    = link_to "Adicionar", [:add_item, item_id: related_item.slug], class: "btn btn-block", title: related_item.name, data: {toggle: "modal", target: "#modalWindow"}
+                  - else
+                    = link_to "Adicionar", [:new, :user, :session], class: "btn btn-block", title: related_item.name
+
+    div#demoLightbox.lightbox.hide.fade tabindex="-1" role="dialog" aria-hidden="true"
+
+- content_for :script do
+  javascript:
+    $(document).on('ready', function(){
+      $('.navbar-main').removeClass('navbar-transparent');
+    });
+
+    $('#modalWindow').on('show.bs.modal', function (e) {
+      $(this).find('.modal-body').append("<img src='/images/loader.gif' id='loading-indicator' style='display:none'/>")
+      $('#loading-indicator').show();
+      console.log("modal-show");
+    });
+
+    $('#modalWindow').on('loaded.bs.modal', function (e) {
+      $('#loading-indicator').hide();
+      console.log("modal-loaded!");
+    });

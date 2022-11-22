@@ -1,0 +1,102 @@
+pt-br:
+  activerecord:
+    models:
+      address: Endereço
+      catalog: Catálogo
+      category: Categoria
+      subcategory: Subategoria
+      customer: Cliente
+      consultant: Consultor
+      product: Produto
+      segment: Segmento
+      supplier: Fornecedor
+      account: Conta Bancária
+    attributes:
+      account:
+        agency: Agencia
+        account: Conta
+        bank: Banco
+        name: Nome
+        identifier: CPF/CNPJ
+      address:
+        kind: Tipo
+        district: Bairro
+        street: Rua
+        number: Número
+        state: Estado
+        city: Cidade
+        state_id: Estado
+        city_id: Cidade
+        zipcode: Cep
+      catalog:
+        name: Nome
+        description: Descrição
+        active: Ativo
+      category:
+        name: Nome
+      subcategory:
+        name: Nome
+        category: Categoria
+      consultant:
+        name: Nome
+        description: Descrição do cliente ou texto descritivo
+        street: Rua/Logradouro
+        number: Nº
+        city: Cidade
+        state: Estado (UF)
+        phone: Telefone
+        mobile: Celular
+        password: Senha
+        password_confirmation: Confirmação de Senha
+        active: Ativo
+        agency: Agencia
+        account: Conta
+        bank: Banco
+        name: Nome
+        identifier: CPF/CNPJ
+      customer:
+        name: Nome
+        description: Descrição do cliente ou texto descritivo
+        street: Rua/Logradouro
+        number: Nº
+        city: Cidade
+        state: Estado (UF)
+        phone: Telefone
+        mobile: Celular
+        password: Senha
+        password_confirmation: Confirmação de Senha
+        active: Ativo
+      product:
+        subcategory: Subcategoria
+        code: Código
+        name: Nome
+        description: Descrição
+        price: Preço
+        promo_price: Preço Promocional
+        active: Ativo
+      order_shipping:
+        street: Rua
+        zipcode: Cep
+        district: Bairro
+        number: Número
+        kind: Tipo
+        state: Estado
+        city: Cidade
+        complement: Complemento
+      segment:
+        name: Nome
+      supplier:
+        name: Nome
+      user:
+        name: Nome
+        description: Descrição do cliente ou texto descritivo
+        street: Rua/Logradouro
+        number: Nº
+        city: Cidade
+        state: Estado (UF)
+        phone: Telefone
+        mobile: Celular
+        identifier: Cpf
+        password: Senha
+        password_confirmation: Confirmação de Senha
+        active: Ativo

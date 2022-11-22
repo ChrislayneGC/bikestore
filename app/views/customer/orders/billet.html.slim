@@ -1,0 +1,21 @@
+.section.slider-page
+  .container
+    h1 Meu Pedido
+    ol.breadcrumb
+      li.breadcrumb-item= link_to "Home", [:root], title: 'Home'
+      li.breadcrumb-item.active Meu Pedido
+
+.section.cart-page.text-center
+  .container
+    h2.title-cart O Boleto para seu pedido foi gerado.
+    p Para visualiza-lo clique no botão abaixo!
+    = link_to "BOLETO", @pdf, target: "_blank", class: "btn-outline"
+
+
+- content_for :script do
+  javascript:
+
+    $( document ).ready(function() {
+      $('.navbar-main').removeClass('navbar-transparent');
+      $('#edit-shipping').validate();
+    });

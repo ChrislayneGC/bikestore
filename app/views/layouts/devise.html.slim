@@ -1,0 +1,73 @@
+doctype html
+html(lang="pt-BR")
+  head
+    meta charset="UTF-8"
+    = yield :head
+
+    = stylesheet_link_tag 'frontend', media: 'all'
+    = csrf_meta_tags
+    link(href="/assets/icon.png" rel="shortcut icon")
+    meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"
+    script src="https://js.iugu.com/v2"
+    link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css"
+  body
+    .wrap
+      .header
+        nav.navbar.navbar-default.navbar-fixed-top.navbar-main.navbar-transparent
+          .container
+            .navbar-header
+              button.navbar-toggle.collapsed(type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="false")
+                span.icon-bar
+                span.icon-bar
+                span.icon-bar
+              = link_to(image_tag("forbike.png", alt: 'Forbike', height: '90px'), [:root], class: "navbar-brand")
+            .collapse.navbar-collapse#main-nav
+              ul.nav.navbar-nav.navbar-right
+                li= link_to "Fornecedores", [:root], class: 'btn btn-default btn-bordered'
+                li= link_to "Contato", [:root], class: 'btn btn-default btn-bordered'
+                - if consultant_signed_in?
+                  li= link_to "#{current_consultant.name}", [:consultant_show]
+                  li= link_to "Sair", [:destroy, :consultant, :session], method: 'delete'
+                - if customer_signed_in?
+                  li= link_to "#{current_customer.name}", [:customer_show]
+                  - if cart
+                    li= link_to "Carrinho <span class='badge badge-cart'>#{cart.items.count}</span>".html_safe, [cart], method: 'get'
+                  li= link_to "Sair", [:destroy, :customer, :session], method: 'delete'
+                - unless consultant_signed_in? || customer_signed_in?
+                  li= link_to "Minha Conta", [:new, :user, :session], class: 'btn btn-default btn-bordered'
+
+        = yield :header
+
+      .content
+        - if flash[:notice]
+          .container
+            .row
+              .alert.alert-info.text-center(style="border-radius: 0; margin-top:15px;")
+                strong #{flash[:notice]}
+        - if flash[:alert] || flash[:error]
+          .container
+            .row
+              .alert.alert-danger.text-center(style="border-radius: 0; margin-top:15px;")
+                strong #{flash[:alert]} #{flash[:error]}
+        = yield
+
+    footer.footer
+      .container
+        .pull-left
+          | © 2016 Forbike. <a href="#"><em>Termos de uso</em></a>
+
+    #modal-window.hidden-print.modal.fade(aria-hidden="true" role="dialog" tabindex="-1" data-backdrop="false")
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(data-dismiss="modal" type="button")
+              span(aria-hidden="true") &times;
+              span.sr-only Fechar
+            h4.modal-title
+          .modal-body
+            img(src="/images/loader.gif" id="loading-indicator" style="display:none")
+          .modal-footer
+            button.btn.btn-default(data-dismiss="modal" type="button") Ok
+
+    = javascript_include_tag 'frontend', media: 'all'
+    = yield :script

@@ -1,0 +1,37 @@
+
+.row
+  - if @consultants.present?
+    .col-xs-12.col-sm-12.col-md-6
+      h3: strong Consultores
+      .row
+        - @consultants.each do |c|
+          .col-xs-12.col-sm-12.col-md-12
+            .panel.panel-default
+              .panel-body
+                p= image_tag(c.s3_image.present? ? c.s3_image : "http://placehold.it/185x70")
+                p <strong>Nome:</strong> #{c.name} <br> <strong>Email:</strong> #{c.email}
+                = link_to "Selecionar!", [:payment_customer_carts, id: @order.id, consultant: c[:email]], method: 'post', class: "btn btn-success"
+  - if @favorites.present?
+    .col-xs-12.col-sm-12.col-md-6
+      h3: strong Favoritos
+      .row
+        - @favorites.each do |f|
+          .col-xs-12.col-sm-12.col-md-12
+            .panel.panel-default
+              .panel-body
+                p= image_tag(f.s3_image.present? ? f.image : "http://placehold.it/185x70")
+                p <strong>Nome:</strong> #{f.name} <br> <strong>Email:</strong> #{f.email}
+                = link_to "Selecionar!", [:payment_customer_carts, id: @order.id, consultant: f[:email]], method: 'post', class: "btn btn-success"
+
+- unless @favorites.present? || @consultants.present?
+  .row
+    .col-xs-12.col-md-12.col-sm-12
+      h3.text-center Nenhum consultor encontrado, tente novamente mais tarde.
+
+- content_for :script do
+  javascript:
+
+    $( document ).ready(function() {
+      $('.navbar-main').removeClass('navbar-transparent');
+      $('#edit-shipping').validate();
+    });

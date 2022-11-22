@@ -1,0 +1,39 @@
+.container
+  table.table.order-table
+    tr
+      th(width="82px") #
+      th Descrição do item
+      th(width="150px") Valor R$
+      th Quantidade
+      th(width="100px")
+    - @order.items.each do |item|
+      - item_price = (item.price.to_f * item.quantity)
+      tr
+        td= image_tag(item.item.s3_image.present? ? item.item.s3_image : "http://placehold.it/185x185", alt: item.to_s, class: "img-thumbnail")
+        td
+          p
+            strong.cblue #{item.item.name}
+          p
+            small.text-block= item.item.description
+          - if @target.present? && @target["id"].to_i == item.item["id"]
+            p
+              alert.alert-info= @target["info"]
+        td
+          p
+            strong.text-block.cgreen= number_to_currency(item.total)
+          p
+            small #{number_to_currency(item.price)} un.
+        td
+          = item.quantity
+
+    tr
+      td(colspan="5" class="bclean")
+        <strong>Subtotal: <span class="cgreen btn-mr">#{number_to_currency(@order.total.to_f)}</span></strong>
+  hr.gap
+  = link_to "Voltar", [:customer, id: @order.customer.username], class: "btn btn-success"
+
+- content_for :script do
+  javascript:
+    $(document).on('ready', function(){
+      $('.navbar-main').removeClass('navbar-transparent');
+    });

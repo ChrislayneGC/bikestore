@@ -1,0 +1,6 @@
+.nested-fields
+  .col-xs-12.col-sm-4.col-md-3
+    .form-group.thumbnail= image_tag(f.object.image.present? ? f.object.image : "http://placehold.it/200x200")
+    = f.input :image, label: false, as: :file, wrapper_html: { style: "float:left;margin: 0 10px 10px 0" }, input_html: {data:{target: 'image'}, onchange: 'javascript:imagePreview(this, event)'}
+    = link_to_remove_association 'remover', f
+    hr.gap

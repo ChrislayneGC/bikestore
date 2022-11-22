@@ -1,0 +1,25 @@
+- content_for :head do
+  title Forbike - Categorias
+
+.section.title-area
+  .container
+    h1 Categorias
+    ol.breadcrumb
+      li.breadcrumb-item= link_to 'Dashboard', [:admin], title: 'Dashboard'
+      li.breadcrumb-item.active Categorias
+
+.section
+  .container
+    .row
+      .col-3
+        .aside.section
+          = link_to "Nova Categoria", [:new, :admin, :category]
+          = simple_form_for :search, url: [:search, :admin, :categories], html: {class: "form-admin"}, method: :get, remote: true do |f|
+            h6 Filtrar Categorias
+            .form-group= f.input :criteria, input_html: { class: "form-control" }, label: "Buscar categorias:", as: 'search', placeholder: '...'
+            = f.submit "BUSCAR", class: "btn btn-default btn-block squared"
+
+      .col-9
+        .result-set
+          = render 'categories'
+        = paginate @categories

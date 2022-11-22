@@ -1,0 +1,12 @@
+= link_to "Novo Banner", new_admin_banner_path, class: "btn btn-default btn-block squared"
+- if @banners.length > 0
+  ul.list-group.list-group-flush
+    p Ativos
+    - @banners.each do |banner|
+      - if banner.active? 
+        li.list-group-item = link_to(image_tag(banner.image.url(:medium)), edit_admin_banner_path(banner.id))
+  ul.list-group.list-group-flush
+    p Inativos
+    - @banners.each do |banner|
+      - if !banner.active? 
+        li.list-group-item = link_to(image_tag(banner.image.url(:medium)), edit_admin_banner_path(banner.id))

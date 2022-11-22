@@ -1,0 +1,15 @@
+- content_for :head do
+  title Forbike: Meu Pedido
+
+.title-area
+  .container
+    center: h1 Meu Pedido
+    ol.breadcrumb
+      li= link_to "Home", [:root]
+      li.active Meu Pedido
+
+.section-half
+  .container
+    .row
+      .col-xs-12.col-sm-8.col-sm-offset-2.col-md-8.col-md-offset-2
+        = render 'consultant'

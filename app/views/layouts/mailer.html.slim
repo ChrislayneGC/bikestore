@@ -1,0 +1,9 @@
+html
+  body(style="font-family:Arial,sans-serif")
+    #mail(style="width:600px;padding:30px;background-color:#fbfbfb;border:1px solid #e5e5e5;margin:30px auto")
+
+      #mail-content= yield
+    #footer(style="color:#777c7f")
+      center
+        strong(style="display:block") ForbikeStore, #{Date.today.year}.
+        small &copy;Todos os direitos reservados.

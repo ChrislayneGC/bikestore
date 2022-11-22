@@ -1,0 +1,15 @@
+.container
+  .row
+   .col-xs-12.col-sm-12.col-md-12
+      h2.text-center.payment-success O Boleto para seu pedido foi gerado.
+      p.text-center.payment-success Para visualiza-lo clique no botão abaixo!
+      .text-center.payment-success= link_to "BOLETO", @pdf, target: "_blank", class: "btn btn-success btn-lg"
+
+
+- content_for :script do
+  javascript:
+
+    $( document ).ready(function() {
+      $('.navbar-main').removeClass('navbar-transparent');
+      $('#edit-shipping').validate();
+    });

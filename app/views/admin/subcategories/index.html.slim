@@ -1,0 +1,23 @@
+- content_for :head do
+  title Forbike - Subcategorias
+
+.section.title-area
+  .container
+    h1 Subcategorias
+    ol.breadcrumb
+      li.breadcrumb-item= link_to 'Dashboard', [:admin], title: 'Dashboard'
+      li.breadcrumb-item.active Subcategorias
+
+.section
+  .container
+    .row
+      .col-3
+        .section.aside
+          = link_to "Nova Subcategoria", [:new, :admin, :subcategory]
+          = simple_form_for :search, url: [:search, :admin, :subcategories], html: {class: "form-admin"}, method: :get, remote: true do |f|
+            h6 Filtrar Subcategorias
+            .form-group= f.input :criteria, input_html: { class: "form-control" }, label: "Buscar subcategoria:", as: 'search', placeholder: '...'
+            = f.submit "BUSCAR", class: "btn btn-block"
+      .col-xs-12.col-sm-9.col-md-9
+        .result-set= render 'sub_categories'
+        = paginate @subcategories

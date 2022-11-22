@@ -1,0 +1,22 @@
+- content_for :head do
+  title Forbike - Painel Administrativo
+
+.section.full-height
+  .box-valing
+    .container
+      .row.justify-content-center
+        .col-12.col-sm-4.col-md-4
+          center= image_tag "forbike.png", alt: "Forbike", class: "logo-admin"
+          h3.text-center Painel de Controle
+          = simple_form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'form-default'}) do |f|
+            .form-group
+              = f.input :email, required: false, label: false, label_html: { class: "control-label" }, input_html: {class: "form-control", placeholder: "E-mail"}
+            .form-group
+              = f.input :password, required: false, label: false, label_html: { class: "control-label" }, input_html: {class: "form-control", placeholder: "Senha"}
+            .checkbox
+              = f.input :remember_me, label: "Lembrar-me neste computador?", as: :boolean if devise_mapping.rememberable?
+
+            = f.button :submit, "Acessar painel", class: "btn btn-primary btn-block"
+
+
+          p(style="margin-top: 30px; float: left;"): small Caro cliente, este acesso é restrito! Se você não pertence a Forbike e não possuir permissão de acesso, por favor <a href="#{[:root]}">clique aqui</a> e retorne ao site.

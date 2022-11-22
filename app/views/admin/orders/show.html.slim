@@ -1,0 +1,85 @@
+.title-area
+  .container
+    center: h1 Pedidos
+    ol.breadcrumb
+      li= link_to '<i class="icon icon-home"></i>'.html_safe, [:customer_show], title: "Página inicial"
+      li= link_to "Pedidos", [:customer, :orders]
+      li.active Pedido: #{@order.number}
+
+
+.section-half
+  .container
+    .panel.panel-default
+      .panel-heading(role="tab" id="heading#{@order.id}")
+        .row
+          .col-xs-12.col-sm-6.col-md-6
+            = link_to "#{@order.created_at.to_s_br}", "#collapse#{@order.id}", role: "button", class: 'text-left'
+
+      .panel-body
+        .row
+          .col-xs-12.col-sm-4.col-md-3
+            h5 <strong>Forma de pagemanto</strong><br>#{@order.payment_method}
+          .col-xs-12.col-sm-4.col-md-3
+            h5 <strong>Situação do pagemanto</strong><br><span class="text-capitalize">#{@order.status_br}</span>
+          .col-xs-12.col-sm-4.col-md-3
+            h5: strong TOTAL<br>#{number_to_currency(@order.total)}
+          .col-xs-12.col-sm-4.col-md-3
+            h5 <strong>Tipo de entrega</strong><br><span class="text-capitalize">#{@order.shipping.kind}</span>
+          .col-xs-12.col-sm-4.col-md-3
+            h5 <strong>Código de Rastreio</strong><br><span class="text-capitalize">#{@order.delivery_code}</span>
+          - if @order.delivered_in
+            .col-xs-12.col-sm-4.col-md-3
+              h5: strong Entregue em:<br>#{@order.delivered_in.to_s_br}
+          - else
+            .col-xs-12.col-sm-4.col-md-3
+              h5: strong Aguardando Entrega
+
+        hr
+        h4: strong Meus Dados
+        .row
+          .col-xs-12.col-sm-4.col-md-4
+            h5 <strong>Nome</strong><br>#{@order.user.name}
+          .col-xs-12.col-sm-4.col-md-4
+            h5 <strong>Telefone</strong><br>#{@order.user.phone}
+          .col-xs-12.col-sm-4.col-md-4
+            h5 <strong>E-mail</strong><br>#{@order.user.email}
+        h5 <strong>Endereço</strong><br>#{@order.shipping}
+        .table-responsive
+          table.table.table-bordered
+            thead
+              tr
+                th
+                th Item
+                th.text-center Qnt.
+                th.text-cent Valor un.
+                th Valor
+
+            tbody
+              - @order.items.each do |item|
+                - item_price = (item.price.to_f * item.quantity)
+                tr
+                  td.text-center= image_tag(item.item.s3_image.present? ? item.item.s3_image : "http://placehold.it/185x185", alt: item.to_s, class: "img-thumbnail", style: 'max-height: 90px;')
+                  td
+                    strong #{item.item.name}
+                    br
+                    small= item.item.description
+                    - if @target.present? && @target["id"].to_i == item.item["id"]
+                      alert.alert-info= @target["info"]
+                  td.text-center
+                    strong= item.quantity
+                  td
+                    strong #{number_to_currency(item.price)} un.
+                  td
+                    strong= number_to_currency(item.total)
+
+
+    hr.gap
+    .row
+      .col-xs-12.col-sm-6-col-md-6
+        = link_to "Voltar", [:admin, :orders], class: "btn btn-success"
+      - unless @order.delivered_in.present? || @order.payment_status.eql?("waiting")
+        .col-xs-12.col-sm-6-col-md-6
+          .text-right= link_to "Pedido Entregue!", order_delivered_customer_order_path(@order), method: 'patch', class: "btn btn-danger", data: {confirm: "Tem certeza que o pedido foi entregue? Não é possível desfazer essa operação!!"}
+      - if !@order.billet_url.eql?("")
+        .col-xs-12.col-sm-6-col-md-6
+          .text-right= link_to "Boleto", @order.billet_url, class: "btn btn-success btn-lg", target: :_blank

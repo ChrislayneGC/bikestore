@@ -1,0 +1,29 @@
+- content_for :head do
+  title Minha conta - Forbike
+
+.section
+  .container
+    .row
+      .col-xs-12.col-sm-4.col-md-4#box-link
+        .v-align
+          h2: center Cadastre-se agora, é <strong>grátis!</strong>
+          p.lead: center Cadastre-se agora!
+          center= link_to 'Cadastre-se', [:new, :consultant, :registration], class: 'btn btn-default btn-blue btn-block'
+      .col-xs-12.col-sm-4.col-md-4.col-md-offset-2#box-log
+        h2.section-title Log in Cliente
+        = simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+          .form-group
+            = f.input :email, required: false, label: "E-mail", input_html: {class: "form-control", placeholder: "E-mail"}
+          .form-group
+            = f.input :password, required: false, label: "Senha", input_html: {class: "form-control", placeholder: "Senha"}
+          .checkbox
+            = f.input :remember_me, label: "Lembrar-me neste computador?", as: :boolean if devise_mapping.rememberable?
+
+          = f.button :submit, "Acessar minha conta", class: "btn btn-block btn-primary"
+
+
+- content_for :script do
+  javascript:
+    $(document).on('ready', function(){
+      $('.navbar-main').removeClass('navbar-transparent');
+    });

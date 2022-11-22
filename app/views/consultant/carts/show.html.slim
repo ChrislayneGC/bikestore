@@ -1,0 +1,19 @@
+- content_for :head do
+  title Forbike: Meu Pedido
+
+.title-area
+  .container
+    center: h1 Meus Pedidos
+    ol.breadcrumb
+      li= link_to 'Home', [:root], title: "Home"
+      li.active Meus Pedidos
+
+.section-half
+  .container
+    #result-set= render 'cart'
+
+- content_for :script do
+  javascript:
+    $(document).on('ready', function(){
+      $('.navbar-main').removeClass('navbar-transparent');
+    });

@@ -1,0 +1,48 @@
+- content_for :head do
+  title Produtos #{@category.name} | Forbike
+  meta name="description" content=""
+
+.section.slider-page
+  .container
+    h1 #{@category.name}
+    ol.breadcrumb
+      li.breadcrumb-item= link_to "Home", [:root], title: 'Home'
+      li.breadcrumb-item.active #{@category.name}
+
+.section.mb-90
+  .container
+    .row
+      .col-12.col-sm-3.col-md-3.sidebar
+        h2 Subcategorias
+        ul.nav.flex-column
+          - @category.subcategories.active.each do |s|
+            li.nav-item
+              = link_to "#{s.name}", [s], title: s.name, role: 'button', class: 'nav-link'
+
+      .col-12.col-sm-9.col-md-9
+        .products-wrap.section
+          .row
+            - @items.each do |item|
+              .col-12.col-sm-4.col-md-3
+                .product-item.section
+                  = link_to(image_tag(item.s3_image, alt: item.name, class: 'img-fluid category_img'), [item], title: item.name)
+                  h3= link_to "#{item.name}", [item], title: item.name
+                  h4= number_to_currency(item.price)
+
+                  - if current_customer
+                    = link_to "Adicionar", [:add_item, item_id: item.id], class: "btn btn-block", title: item.name, remote: true, data: {toggle: 'modal', target: '#modalWindow'}
+                  - else
+                    = link_to "Adicionar", [:new, :user, :session], class: "btn btn-block", title: item.name
+
+        .section
+          = paginate @items
+
+        - unless @items.present?
+          .text-center
+            h3 Nenhum item cadastrado para #{@category}
+
+- content_for :script do
+  javascript:
+    $(document).on('ready', function(){
+      $('.navbar-main').removeClass('navbar-transparent');
+    });

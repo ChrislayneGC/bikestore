@@ -1,0 +1,14 @@
+- content_for :head do
+  title Forboke - Editar Produto
+
+.section.title-area
+  .container
+    h1 Editar Produto
+    ol.breadcrumb
+      li.breadcrumb-item= link_to 'Dashboard', [:admin], title: 'Dashboard'
+      li.breadcrumb-item= link_to 'Produtos', [:admin, :items], title: 'Produtos'
+      li.breadcrumb-item.active Editar Produto
+
+.section
+  .container
+    = render 'form'

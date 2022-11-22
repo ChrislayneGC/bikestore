@@ -1,0 +1,158 @@
+- content_for :head do
+  title Forbike: Editar
+
+.title-area
+  .container
+    center: h1 Endereços
+    ol.breadcrumb
+      li= link_to "Home", [:consultant_show]
+      li.active Endereços
+
+.section-half
+  .container
+    = link_to "Novo Endereço", new_address_consultant_account_index_path(), class: "btn btn-success"
+    hr
+    - @addresses.each_with_index do |address, index|
+      .panel.panel-default(id="address#{index}")
+        .panel.panel-body
+          .row
+            .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2
+              - _method = address.new_record? ? 'post' : 'put'
+              - _url = address.new_record? ? 'create_address_consultant_account_index(address)' : 'update_address_consultant_account_index_path(address)'
+              = render partial: 'address_form',  locals: { address: address, index: index, method: _method, url: _url}
+
+
+
+  hr.gap
+  center= link_to "Clique aqui, para retornar à página inicial", [:root], title: "Retornar à página inicial"
+
+
+- content_for :script do
+  javascript:
+
+    function getType(){
+      return "address";
+    };
+
+    fileFieldStyle();
+
+    function imagePreview(input, event) {
+      if(input.files && input.files[0]) {
+        var target = $(input).parents('.nested-image').find('img');
+        var reader = new FileReader();
+        reader.onload = function(e) { target.attr('src', e.target.result).width(800); }
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function getAddress(prefix) {
+      console.log(prefix);
+      panel = "#address"+prefix;
+      prefix = "address";
+      var zipcode = $(panel+' #address_zipcode').val().replace('-', '');
+      if(zipcode.length >= 8) {
+        $.ajax({
+          url: 'http://viacep.com.br/ws/'+zipcode+'/json', dataType: 'json', cache: true,
+          beforeSend: function() {
+            $('.zipcode:first').css({background: 'white url("/assets/Bike-loader.gif") no-repeat center right 6px', backgroundSize: '16px'});
+          },
+          success: function(data) {
+            if(data.erro != true){
+              $('.zipcode:first').css({background: 'white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAADiUlEQVR4Xu2ai3ETMRCG4wpCCU4FgQowFSSpAFMBUAFOBYEKSCpIUgGmAqACTAfQAfuDxFyEpH2cTtY5uhlNnLNe+2n170rJ4qg/fwgsOoe/BDoI5wkdRAfxUBS6R3SPeBwecUxmbqg8jUTFr/Tubfj+ELfGczLymsoyAWFF738dOoh3zhNi6RE8IQrhkPIIbIU7Z2gMAr5bxzzBVz6ErXFKxmypPIkRcIAuEt/9ez13EC+dHqTszG6HYaM5g/jo3H00hLlqBPTgmsp5xt3FnjBXjQAE6EEsP/A2/XTf/+B0Ya5bA6II9V9mDASEFZVvGghz2hpcZPB2Y7vcayHMBYQUwpoMurFAmAOIMyeMqRzB2w3xfGWF0DoILkfwdiNCPBsDoWUQUggQR4jnf4coLZgWEyopBNiKMKqOEDFIrYHAEXorXM1R4hiO0RIIaXSADaPFsVUQGgjq9FniYS14hAaCOXPkYOwbBM4OWGEov+QpqgvDASUgMFkkNKpDjMAqyQFq2A3OGewFi2DcaBUOhJ8sVuwNFXMKGxn9E71bCSe+o3oIlaPzhdR4ORCxFWPv/oSGcZcqYTfF8gUtiJzbYnWwVz8LjQ6rvaYX7xVtN1T3UlHfVDXlEV+cK+Y6tUwQhyh4lfQpco6QDJYCcUuNc1dhvm9MFPUkQqoJk+jfdNMkMTpWJwVCE9YwYU5INf35eaLPD1bDtO1yYokVxIpLn5yQaiIExttSeSEduEQ9LnxqhW1Hk1pTGQpp7s9wMRuKHa01gDgQ6Eu7mmizoQKl14oj2prvHTWGh3UlILC/sdLcdVnYt0+dNe0mzR5zoCQg0F5zT2BdmL1sCT9ZKQjUv6ICJZ/qgbaUTOFV89SAQMeSREs1AVd5Sz+rRgmLRgzbaJMiCZSqiVNqQlqPQD/akMrBqJo4lQSBvqQpOAeh2lmCm4jFI9CnNaSG85n8eM0B8N9bQaC9JVkazmtDv0x+vK4BAmNYQ+qO2k564yQFUMIj/BbRXL76cVf0wXqxo7VRVH/M1vADaLPOvaXROSIlQKB/6QmziZwhBqQUCPQtyTqbEsghkJIguIscCOSJaMPuoVJJENwWaU4gp/II3+93+rAMFrVJgZwaRBhFmhXIqUGg/2Gi1axA1gDhzyLwhmYFsgYIjIGzCB7TP4DWDhylo0bt+Rcbr4NwKDuIDuLhruoe0T2ie0Q00vwGi+6UQ4PGkUEAAAAASUVORK5CYII=") no-repeat center right 6px', backgroundSize: '22px'});
+              console.log(data);
+              $(panel+' address_district').val(data.bairro);
+              $(panel+' #address_street').val(data.logradouro); $(panel+' #address_city').val(data.localidade); $(panel+' #address_state').val(data.uf); $(panel+' #address_number').focus();
+              $(panel+' #address_state').empty();
+              $(panel+' #address_city').empty();
+              getCityAndState(panel, data.uf, data.localidade);
+              disableFields(panel);
+            }else{
+              $('.zipcode:first').css({background: 'white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAACT0lEQVR4Xu3agU3DMBAFULoBbAATsEI3gA3oCIzCCLABbNAVmAA2gBE4g09KoyT23f+XFOkqRU2lxLGf72wnze4iP78Cu3T4E0iIGgkJkRCng0JGREZERsTkRJmpkamRqbFKatzKVY6yPcr2ErRqfZByn2Tby/bOugZzjFCEy1q5QwBGQXiu5X8zMVgQYwTtKCbGEEHLp2EwIOYQmBhTCFQMFKKFwMBYQqBhIBC9CAhGDwIFwwthRfBgWBBgDA+EF8GC4UGAMKwQKEIPBoLgxrBCfMiVrkmLmKmplYGg1fuUnZveulohWBExFRlMBPP6wgpRGhCBUcrVFWNvJ84dZ0YoBXkgIjDQxrvHBj3RC3GOGK5IYECcEwaEgKTGMJTZY4Y1TWAEFsSWkUFBYEJsgUFDYEOsiUFFiIBYA4OOEAURiRGCEAkRgRGGEA3BvHfQKfUgOyFPx5GV5dJ8H4EQihEBEYkQhsGGWAMhBIMJsSYCHYMFsQUCFYMBsSWCYtzLzpv1bm14PApxDgilPfAaA4G4kwq8Ir1APhfC8EIwn0GUBpSP/ouO+LgxPBBshH1t+XFLDCtEBIK+7BFZdjPKrBBfwb3GxrhqCtQDrBCMWaKVxywM0w2aFaL4IRgtBO1AFMOEUC7qgfBi9CKgGGYEBMKKYUXwYrgQUIheDC+CFcONwIBoYaAIvRgQAgtiDoOF0MKAEZgQYww2whwGBYENoRj014NVoX6HvObsnT5Hdfv/PxOi9mFCJMRpOmdEZERkRExOcZkamRqZGpkaS+vfH9T+q0NoDTTRAAAAAElFTkSuQmCC") no-repeat center right 6px', backgroundSize: '22px'});
+               $(panel+' #address_street').val("");
+               $(panel+' #address_district').val("");
+               $(panel+' #address_number').focus();
+              getStates(panel);
+              enableFields(panel);
+            }
+          },
+          error: function(data) {
+            $('.zipcode:first').css({background: 'white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAACT0lEQVR4Xu3agU3DMBAFULoBbAATsEI3gA3oCIzCCLABbNAVmAA2gBE4g09KoyT23f+XFOkqRU2lxLGf72wnze4iP78Cu3T4E0iIGgkJkRCng0JGREZERsTkRJmpkamRqbFKatzKVY6yPcr2ErRqfZByn2Tby/bOugZzjFCEy1q5QwBGQXiu5X8zMVgQYwTtKCbGEEHLp2EwIOYQmBhTCFQMFKKFwMBYQqBhIBC9CAhGDwIFwwthRfBgWBBgDA+EF8GC4UGAMKwQKEIPBoLgxrBCfMiVrkmLmKmplYGg1fuUnZveulohWBExFRlMBPP6wgpRGhCBUcrVFWNvJ84dZ0YoBXkgIjDQxrvHBj3RC3GOGK5IYECcEwaEgKTGMJTZY4Y1TWAEFsSWkUFBYEJsgUFDYEOsiUFFiIBYA4OOEAURiRGCEAkRgRGGEA3BvHfQKfUgOyFPx5GV5dJ8H4EQihEBEYkQhsGGWAMhBIMJsSYCHYMFsQUCFYMBsSWCYtzLzpv1bm14PApxDgilPfAaA4G4kwq8Ir1APhfC8EIwn0GUBpSP/ouO+LgxPBBshH1t+XFLDCtEBIK+7BFZdjPKrBBfwb3GxrhqCtQDrBCMWaKVxywM0w2aFaL4IRgtBO1AFMOEUC7qgfBi9CKgGGYEBMKKYUXwYrgQUIheDC+CFcONwIBoYaAIvRgQAgtiDoOF0MKAEZgQYww2whwGBYENoRj014NVoX6HvObsnT5Hdfv/PxOi9mFCJMRpOmdEZERkRExOcZkamRqZGpkaS+vfH9T+q0NoDTTRAAAAAElFTkSuQmCC") no-repeat center right 6px', backgroundSize: '22px'});
+             $(panel+' #address_street').val("");
+             $(panel+' #address_district').val("");
+             $(panel+' #address_number').focus();
+            getStates(panel);
+            enableFields(panel);
+          }
+        });
+      }
+    }
+
+
+    function enableFields(panel){
+      $(panel+' #address_state').prop( "readonly", false );
+      $(panel+' #address_city').removeAttr( "readonly");
+      $(panel+' #address_state').removeAttr( "readonly");
+      $(panel+' #address_street').prop( "readonly", false );
+      $(panel+' #address_district').prop( "readonly", false );
+      getStates();
+    };
+
+    function disableFields(panel){
+      if ($(panel+' #address_street').val() != ""){
+        $(panel+' #address_street').prop( "readonly", true );
+      }else{
+        $(panel+' #address_street').prop( "readonly", false );
+      };
+      if ($(panel+' #address_district').val() != ""){
+        $(panel+' #address_district').prop( "readonly", true );
+      }else{
+        $(panel+' #address_district').prop( "readonly", false );
+      };
+
+      $(panel+' #address_state').attr("readonly", "readonly");
+      $(panel+' #address_city').attr("readonly", "readonly");
+    };
+
+    function getStates(panel){
+      $(panel+' #address_city').empty();
+      $(panel+' #address_state').empty();
+      states = $.get('/states', function(data){
+        console.log(data);
+        var options = $(panel+' #address_state')
+        for(i = 0; i < data.states.length; i++){
+          options.append($("<option />").val(data.states[i].id).text(data.states[i].name));
+        };
+        var cities = $(panel+' #address_city')
+        for(i = 0; i < data.cities.length; i++){
+          cities.append($("<option />").val(data.cities[i].id).text(data.cities[i].name));
+        };
+      });
+    };
+
+    function getCities(panel){
+      $(panel+' #address_city').empty();
+      state = $(panel+' #address_district :selected').val();
+      cities = $.get("/cities?id="+state, function(data){
+        console.log(data);
+        var cities = $(panel+' #address_city')
+        for(i = 0; i < data.cities.length; i++){
+          cities.append($("<option />").val(data.cities[i].id).text(data.cities[i].name));
+        };
+      });
+    };
+
+    function getCityAndState(panel, state, city){
+      $(panel+' #address_city').empty();
+      $(panel+' #address_state').empty();
+      response = $.get("/statecity?state="+state+"&city="+city, function(data){
+        console.log(data);
+        var city = $(panel+' #address_city');
+        for(i = 0; i < data.cities.length; i++){
+          city.append($("<option />").val(data.cities[i].id).text(data.cities[i].name));
+        };
+        var state = $(panel+' #address_state');
+        for(i = 0; i < data.states.length; i++){
+          state.append($("<option />").val(data.states[i].id).text(data.states[i].name));
+        };
+      });
+    };

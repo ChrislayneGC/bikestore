@@ -1,0 +1,70 @@
+- if params[:action] == "search"
+  .section.not-found style="margin-bottom: 20px"
+    h3 Sua busca retornou #{pluralize(@orders.count, 'Pedido', 'Pedidos')}.
+    = link_to 'Limpar busca'.html_safe, [:admin, :orders], title: "Limpar busca"
+
+- if @orders.any?
+  .data-accordion#accordion role="tablist"
+
+    - @orders.each do |order|
+      .card
+        .card-header id="header-#{order.id}" role="tab"
+          .row
+            .col-9
+              = link_to "#{order.created_at.to_s_br}", "#collapse-#{order.id}", role: 'button', data: { toggle: 'collapse'}, aria: { expanded: 'true', controls: "collapse-#{order.id}"}
+            .col-3
+              = link_to 'Visualizar', admin_order_path(order), class: "btn btn-success btn-block"
+
+        .collapse id="collapse-#{order.user.id}" role="tabpanel" aria-labelledby="heading-#{order.user.id}" data-parent="#accordion"
+          .card-body
+            p: strong Dados do cliente
+            .row
+              .col-6
+                p <strong>Nome</strong><br>#{order.user.name}
+              .col-3
+                p <strong>Telefone</strong><br>#{order.user.phone}
+              .col-3
+                p <strong>E-mail</strong><br>#{order.user.email}
+            p <strong>Endereço</strong><br>#{order.user.addresses.first}
+
+            p: strong Dados do pedido
+            .row
+              .col
+                p <strong>Subtotal</strong><br>#{number_to_currency(order.total)}
+              .col
+                p <strong>Forma de pagemanto</strong><br>#{order.payment_method}
+              .col
+                p <strong>Situação do pagemanto</strong><br><span class="text-capitalize">#{order.status_br}</span>
+            .row
+              .col
+                p <strong>Código de Rastreio</strong><br><span class="text-capitalize">#{order.delivery_code}</span>
+              .col
+                p <strong>Tipo de entrega</strong><br><span class="text-capitalize">#{order.shipping.kind}</span>
+
+            table.table
+              thead.thead-light
+                tr
+                  th width="100"
+                  th Item
+                  th Valor
+                  th.text-center width="60" Qnt.
+              tbody
+                - order.items.each do |item|
+                  - item_price = (item.price.to_f * item.quantity)
+                  tr
+                    td= image_tag(item.item.s3_image.present? ? item.item.s3_image : "http://placehold.it/185x185", alt: item.to_s, class: "img-thumbnail img-fluid")
+                    td
+                      strong #{item.item.name}
+                      br
+                      small= item.item.description
+                      - if @target.present? && @target["id"].to_i == item.item["id"]
+                        badge.badge-info= @target["info"]
+                    td
+                      strong= number_to_currency(item.total)
+                      br
+                      small #{number_to_currency(item.price)} un.
+                    td.text-center= item.quantity
+
+- else
+  .section.not-found.text-center
+    h3 Desculpe, não existem pedidos para exibição.

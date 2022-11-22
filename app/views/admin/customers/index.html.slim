@@ -1,0 +1,26 @@
+- content_for :head do
+  title Forbike - Clientes
+
+
+.section.title-area
+  .container
+    h1 Clientes
+    ol.breadcrumb
+      li.breadcrumb-item= link_to 'Dashboard', [:admin], title: 'Dashboard'
+      li.breadcrumb-item.active Clientes
+
+.section
+  .container
+    .row
+      .col-3
+        .aside.section
+          = link_to 'Novo Cliente', [:new_admin_customer], title: 'Novo Cliente'
+          = simple_form_for :search, url: [:search, :admin, :customers], html: {class: "form-admin"}, method: :get, remote: true do |f|
+            h6 Filtrar Clientes
+            .form-group
+              = f.input :criteria, input_html: { class: "form-control" }, label: "Buscar clientes:", as: 'search', placeholder: '...'
+            = f.submit "BUSCAR", class: "btn-block"
+      .col-9
+        .result-set
+          = render 'customers'
+        = paginate @customers

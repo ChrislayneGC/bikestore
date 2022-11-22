@@ -1,0 +1,22 @@
+- content_for :head do
+  title Forbikestore - Termos de uso
+  meta name="description" content=""
+
+.section.mb-90
+
+.section.mb-90
+
+.section.mb-90
+	.container
+		h2.title-section.text-center Canais de atendimento da Forbike store
+
+		p Em caso de dúvidas ou sugestões, entre em contato vias alguns de nossos canais.
+
+		ul.nave
+            li= link_to '<i class="socicon-mail"></i> contato@forbike.com.br'.html_safe, 'mailto:contato@forbike.com.br', title: 'E-mail'
+            li= link_to '<i class="socicon-facebook"></i> https://facebook.com/Forbikestore/'.html_safe, "https://www.facebook.com/Forbikestore/",target: :blank, title: 'Facebook'
+            li= link_to '<i class="socicon-instagram"></i> @forbike_store'.html_safe, "https://www.instagram.com/forbike_store/", title: 'Instagram'
+            li= link_to '<i class="socicon-whatsapp"></i> (41)36681430 '.html_safe, nil, title: 'WhatsApp'
+
+- content_for :script do
+  javascript:

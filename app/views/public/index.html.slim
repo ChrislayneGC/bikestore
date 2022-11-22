@@ -1,0 +1,47 @@
+- content_for :head do
+  title Forbike
+  meta name="description" content=""
+.section.slider.carousel.slide#mainSlider data-ride="carousel"
+  ol.carousel-indicators
+    - @banners.each do |index|
+      li data-target="#mainSlider" data-slide-to="#{@banners.index(index)}"
+    
+  .carousel-innner
+    .carousel-item.carousel1.active
+      .v-align
+        .container
+          h1 Forbike!
+          h2 Estamos trabalhando em um site especial para você!
+          = link_to 'Saiba Mais', nil, title: 'Saiba Mais' 
+    - @banners.each do |banner|
+      - if !banner.nil?
+        .carousel-item.carousel2 style="background-image: url(#{banner})";
+.section.mb-90
+  .container
+    h2.title-section.text-center Destaques
+    .products-wrap.section
+      .row
+        - @items.each do |item|
+          .col-12.col-sm-3.col-md-3
+            .product-item.section
+              = link_to(image_tag(item.s3_image, alt: item.name, class: 'img-fluid'), [item], title: item.name)
+              h3= link_to "#{item.name}", [item], title: item.name
+              h4= number_to_currency(item.price)
+
+.section.mb-90
+  .container
+    h2.title-section.text-center Lançamentos
+    .products-wrap.section
+      .row
+        - Item.active.order(created_at: :desc).limit(8).each do |item|
+          .col-12.col-sm-3.col-md-3
+            .product-item.section
+              = link_to(image_tag(item.s3_image, alt: item.name, class: 'img-fluid'), [item], title: item.name)
+              h3= link_to "#{item.name}", [item], title: item.name
+              h4= number_to_currency(item.price)
+
+
+
+
+- content_for :script do
+  javascript:

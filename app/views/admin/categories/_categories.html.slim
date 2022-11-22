@@ -1,0 +1,19 @@
+- if params[:action] == "search"
+  .section.not-found style="margin-bottom: 20px;"
+    h3 Sua busca retornou <strong>#{pluralize(@categories.count, 'Categoria', 'Categorias')}</strong>.
+    = link_to 'Limpar busca'.html_safe, [:admin, :categories], title: "Limpar busca"
+
+- if @categories.any?
+  table.table.data-table
+    thead.thead-light
+      th Nome
+      th width="60"
+    tbody
+      - @categories.each do |category|
+        tr
+          td= link_to category.name, [:edit_admin, category], title: category
+          td.text-center= link_to '<i class="icon icon-pencil"></i>'.html_safe, [:edit_admin, category], title: "Editar", class: "btn btn-info btn-sm"
+
+- else
+  .section.not-found style="margin-bottom: 20px;"
+    h3 Desculpe, não existem categorias para exibição.

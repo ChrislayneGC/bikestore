@@ -1,0 +1,123 @@
+doctype html
+html(lang="pt-BR")
+  head
+    meta charset="UTF-8"
+    = yield :head
+    link(rel="icon" href="/assets/forbike.png")
+    = stylesheet_link_tag 'frontend', media: 'all'
+    = csrf_meta_tags
+    link(href="/assets/icon.png" rel="shortcut icon")
+    link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700,800,900" rel="stylesheet"
+    link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet"
+    meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"
+    script src="https://js.iugu.com/v2"
+    link rel="stylesheet" href="https://s3.amazonaws.com/icomoon.io/114779/Socicon/style.css?u8vidh"
+
+    link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css"
+
+
+    script src="https://www.googletagmanager.com/gtag/js?id=UA-116993149-1"
+
+    javascript:
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-116993149-1');
+
+
+  body
+    .wrap
+      .header
+        .upper-header.section
+          .container
+            ul.nav.justify-content-end
+              i.fas.fa-phone-volume
+              li.nav-item= link_to 'Contato', contato_path, class: 'nav-link'
+              - if consultant_signed_in?
+                li.nav-item= link_to "#{current_consultant.name}", [:root], title: "#{current_consultant.name}", class: 'nav-link'
+                li.nav-item= link_to 'Sair', [:destroy, :consultant, :session], method: 'delete', title: 'Sair', class: 'nav-link'
+
+              - if customer_signed_in?
+                li.nav-item= link_to "#{current_customer.name}", [:customer_show], title: "#{current_customer.name}", class: 'nav-link'
+
+                - if cart
+                  li.nav-item= link_to "Carrinho <span class='badge badge-secondary'>#{cart.items.count}</span>".html_safe, [current_customer, cart], method: 'get', title: 'Meu Carrinho', class: 'nav-link'
+                  li.nav-item= link_to "Sair", [:destroy, :customer, :session], method: 'delete', title: 'Sair', class: 'nav-link'
+
+              - unless consultant_signed_in? || customer_signed_in?
+                i.fas.fa-address-card
+                li.nav-item= link_to "Minha Conta", [:new, :customer, :session], title: 'Minha Conta', class: 'nav-link'
+
+        .main-header.section
+          nav.navbar.navbar-expand-lg.fixed-top
+            .container
+              = link_to(image_tag('forbike.png', alt: 'Forbike', height: '90px'), [:root], title: 'Forbike', class: 'navbar-brand')
+              button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navMain" aria-controls="navMain" aria-expanded="false")
+                i.fas.fa-align-justify
+
+
+              .collapse.navbar-collapse#navMain
+                ul.navbar-nav.ml-auto
+                  - @categories.each do |category|
+                    li.nav-item
+                      = link_to "#{category.name}", [category], title: "#{category.name}", class: 'nav-link'
+      .main
+        .content
+          - if flash[:notice]
+            .container
+              .alert.alert-info.text-center(style="border-radius: 0; margin-top:15px;")
+                strong #{flash[:notice]}
+          - if flash[:alert] || flash[:error]
+            .container
+              .alert.alert-danger.text-center(style="border-radius: 0; margin-top:15px;")
+                strong #{flash[:alert]} #{flash[:error]}
+
+          = yield
+
+    .footer
+      .upper-footer.section
+        .container
+          .row
+            .col-12.col-sm-4.col-md-4
+              h6= @app_info.bio_title
+              p= @app_info.bio
+
+            .col-12.col-sm-2.col-md-2
+              h6 Navegação
+              ul.nave
+                li= link_to 'Home',  [:root], title: 'Home'
+
+                li= link_to "Quem Somos", quemsomos_path
+                li= link_to 'Contato',  contato_path
+                li= link_to 'Termos de Uso', termos_path
+
+            .col-12.col-sm-3.col-md-3
+              h6 Canais de Atendimento
+              ul.nave.nave-stack
+                li= link_to "<i class='socicon-mail'></i> #{@app_info.email}".html_safe, "mailto:#{@app_info.email}", title: 'E-mail'
+                li= link_to "<i class='socicon-facebook'></i> #{@app_info.facebook}".html_safe, "#{@app_info.facebook}",target: :blank, title: 'Facebook'
+                li= link_to "<i class='socicon-instagram'></i> #{@app_info.instagram}".html_safe, "#{@app_info.instagram}", title: 'Instagram'
+                li= link_to "<i class='socicon-whatsapp'></i> #{@app_info.whatsapp} ".html_safe, nil, title: 'WhatsApp'
+
+            .col-12.col-sm3.col-md-3
+              h6 Siga a Forbikestore
+              div#fb-root
+              div.fb-page data-href="#{@app_info.facebook}" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"
+                blockquote.fb-xfbml-parse-ignore cite="#{@app_info.facebook}"
+                  link_to https://www.facebook.com/Forbikestore/
+
+
+      .lower-footer.section
+        p © 2016 Forbike. #{link_to 'Termos de uso', nil, title: 'Termos de uso'}
+
+
+
+    .modal.fade#modalWindow tabindex="-1" role="dialog" aria-labelledby="modal-window-label" aria-hidden="true" data-backdrop="true" data-keyboard="true"
+
+
+
+    script(src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous")
+    script( src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous")
+    script()
+    = javascript_include_tag 'frontend', media: 'all'
+    = yield :script

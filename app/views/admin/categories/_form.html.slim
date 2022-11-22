@@ -1,0 +1,9 @@
+.row.justify-content-center
+  .col-6
+    = simple_form_for @category, url:[:admin, @category], html: {class: 'form-admin'} do |f|
+      p.text-center: small Abaixo você poderá informar o nome de uma categoria, que poderá ser utilizada por seus fornecedores.
+      .form-group= f.input :name, input_html: {class:"form-control"}
+      .form-check
+        = f.input :active, label: 'Categoria ativa?'
+        small Se esta opção estiver marcada, indica que a categoria está disponível para acesso.
+      = f.submit style: "padding-left: 15px; padding-right: 15px;"

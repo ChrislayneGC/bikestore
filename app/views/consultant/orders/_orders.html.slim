@@ -1,0 +1,63 @@
+- if params[:action] == "search"
+  h3(style="margin-top: 0;")
+    strong Sua busca retornou #{pluralize(@orders.count, 'Pedido', 'Pedidos')}.
+  = link_to '<small class="icon icon-trash"></small> Limpar busca'.html_safe, [:consultant, :orders], title: "Limpar busca", class: 'btn btn-default'
+  hr
+
+- if @orders.any?
+  .panel-group#accordion(role="list" aria-multiselectable="true")
+    - @orders.each do |order|
+      .panel.panel-default
+        .panel-heading(role="tab" id="heading#{order.id}")
+          .row
+            .col-xs-12.col-sm-6.col-md-6
+              = link_to "#{order.created_at.to_s_br}", "#collapse#{order.id}", role: "button", data: {toggle: 'collapse', parent: '#accordion'}, aria:{ expanded: 'true', controls: "collapse#{order.id}"}, class: 'text-left'
+            .col-xs-12.col-sm-6.col-md-6
+              .text-right= link_to '<i class="icon icon-search"></i> Visualizar'.html_safe, consultant_order_path(order), class: "btn btn-success"
+        .panel-collapse.collapse(role="tabpanel" aria-labelledby="heading#{order.id}" id="collapse#{order.id}")
+          .panel-body
+            .row
+              .col-xs-12.col-sm-4.col-md-4
+                h5 <strong>Forma de pagemanto</strong><br>#{order.payment_method}
+              .col-xs-12.col-sm-4.col-md-4
+                h5 <strong>Situação do pagemanto</strong><br><span class="text-capitalize">#{order.status_br}</span>
+              .col-xs-12.col-sm-4.col-md-4
+                h5: strong SUBTOTAL<br>#{number_to_currency(order.total)}
+            h4: strong Meus Dados
+            .row
+              .col-xs-12.col-sm-4.col-md-4
+                h5 <strong>Nome</strong><br>#{order.consultant.name}
+              .col-xs-12.col-sm-4.col-md-4
+                h5 <strong>Telefone</strong><br>#{order.consultant.phone}
+              .col-xs-12.col-sm-4.col-md-4
+                h5 <strong>E-mail</strong><br>#{order.consultant.email}
+            h5 <strong>Endereço</strong><br>#{order.consultant.addresses.first}
+            .table-responsive
+              table.table.table-bordered
+                thead
+                  tr
+                    th
+                    th Item
+                    th Valor
+                    th.text-center Qnt.
+                tbody
+                  - order.items.each do |item|
+                    - item_price = (item.price.to_f * item.quantity)
+                    tr
+                      td.text-center= image_tag(item.item.s3_image.present? ? item.item.s3_image : "http://placehold.it/185x185", alt: item.to_s, class: "img-thumbnail", style: 'max-height: 90px;')
+                      td
+                        strong #{item.item.name}
+                        br
+                        small= item.item.description
+                        - if @target.present? && @target["id"].to_i == item.item["id"]
+                          alert.alert-info= @target["info"]
+                      td
+                        strong= number_to_currency(item.total)
+                        br
+                        small #{number_to_currency(item.price)} un.
+                      td.text-center= item.quantity
+  .section
+    = paginate @orders
+
+- else
+  p: strong Desculpe, não existem pedidos para exibição.

@@ -1,0 +1,15 @@
+.container
+  .row
+   .col-xs-12.col-sm-12.col-md-12
+      h2.text-center.payment-success Pagamento concluído
+      p.text-center.payment-success Caso queira acompanhar a situação de seu pedido clique no botão abaixo!
+      .text-center.payment-success= link_to "Pedidos", [:consultant_show], class: "btn btn-success btn-lg"
+
+
+- content_for :script do
+  javascript:
+
+    $( document ).ready(function() {
+      $('.navbar-main').removeClass('navbar-transparent');
+      $('#edit-shipping').validate();
+    });

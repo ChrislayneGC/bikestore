@@ -1,0 +1,114 @@
+- content_for :head do
+  title Forbike: Cadastre-se agora é grátis!
+
+.section.slider-page
+  .container
+    h1 Cadastre-se agora!
+    ol.breadcrumb
+      li.breadcrumb-item= link_to "Home", [:root], title: 'Home'
+      li.breadcrumb-item.active Registrar
+
+.section.mb-90
+  .container
+    .row
+      .col-12.col-sm-6.col-md-6.text-center.mb-30
+        h2.title-alt <i class="fa fa-lock"></i> <br>Cadastro Seguro
+        p Seus dados e respostas tratados com total confidencialidade.
+      .col-12.col-sm-6.col-md-6.text-center.mb-30
+        h2.title-alt <i class="fa fa-envelope"></i><br>Confirmação via e-mail
+        p Você precisará confirmar seu endereço de e-mail para continuar.
+
+
+    .row.justify-content-center
+      .col-12.col-sm-8.col-md-6
+        = render @type.downcase
+
+
+- content_for :script do
+  javascript:
+
+    fileFieldStyle();
+
+    $(document).on('ready', function(){
+      $('.navbar-main').removeClass('navbar-transparent');
+
+      $(".img-check").click(function(){
+				$(this).toggleClass("check");
+			});
+
+      $( ".zipcode" ).blur(function() {
+        getAddress("_addresses_attributes_0");
+      });
+
+    });
+
+
+    function imagePreview(input, event) {
+      if(input.files && input.files[0]) {
+        var target = $(input).parents('.nested-image').find('img');
+        var reader = new FileReader();
+        reader.onload = function(e) { target.attr('src', e.target.result).width(800); }
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function getType(){
+      var type = $('.type').val();
+      return type.toLowerCase();
+    };
+
+    function getAddress(prefix) {
+      prefix = getType() + prefix;
+      var zipcode = $('.zipcode:first').val().replace('-', '');
+      if(zipcode.length >= 8) {
+        $.ajax({
+          url: 'https://viacep.com.br/ws/'+zipcode+'/json', dataType: 'json', cache: true,
+          beforeSend: function() {
+            $('.zipcode:first').css({background: 'white url("/assets/Bike-loader.gif") no-repeat center right 6px', backgroundSize: '16px'});
+          },
+          success: function(data) {
+            if(data.erro != true){
+              $('.zipcode:first').css({background: 'white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAADiUlEQVR4Xu2ai3ETMRCG4wpCCU4FgQowFSSpAFMBUAFOBYEKSCpIUgGmAqACTAfQAfuDxFyEpH2cTtY5uhlNnLNe+2n170rJ4qg/fwgsOoe/BDoI5wkdRAfxUBS6R3SPeBwecUxmbqg8jUTFr/Tubfj+ELfGczLymsoyAWFF738dOoh3zhNi6RE8IQrhkPIIbIU7Z2gMAr5bxzzBVz6ErXFKxmypPIkRcIAuEt/9ez13EC+dHqTszG6HYaM5g/jo3H00hLlqBPTgmsp5xt3FnjBXjQAE6EEsP/A2/XTf/+B0Ya5bA6II9V9mDASEFZVvGghz2hpcZPB2Y7vcayHMBYQUwpoMurFAmAOIMyeMqRzB2w3xfGWF0DoILkfwdiNCPBsDoWUQUggQR4jnf4coLZgWEyopBNiKMKqOEDFIrYHAEXorXM1R4hiO0RIIaXSADaPFsVUQGgjq9FniYS14hAaCOXPkYOwbBM4OWGEov+QpqgvDASUgMFkkNKpDjMAqyQFq2A3OGewFi2DcaBUOhJ8sVuwNFXMKGxn9E71bCSe+o3oIlaPzhdR4ORCxFWPv/oSGcZcqYTfF8gUtiJzbYnWwVz8LjQ6rvaYX7xVtN1T3UlHfVDXlEV+cK+Y6tUwQhyh4lfQpco6QDJYCcUuNc1dhvm9MFPUkQqoJk+jfdNMkMTpWJwVCE9YwYU5INf35eaLPD1bDtO1yYokVxIpLn5yQaiIExttSeSEduEQ9LnxqhW1Hk1pTGQpp7s9wMRuKHa01gDgQ6Eu7mmizoQKl14oj2prvHTWGh3UlILC/sdLcdVnYt0+dNe0mzR5zoCQg0F5zT2BdmL1sCT9ZKQjUv6ICJZ/qgbaUTOFV89SAQMeSREs1AVd5Sz+rRgmLRgzbaJMiCZSqiVNqQlqPQD/akMrBqJo4lQSBvqQpOAeh2lmCm4jFI9CnNaSG85n8eM0B8N9bQaC9JVkazmtDv0x+vK4BAmNYQ+qO2k564yQFUMIj/BbRXL76cVf0wXqxo7VRVH/M1vADaLPOvaXROSIlQKB/6QmziZwhBqQUCPQtyTqbEsghkJIguIscCOSJaMPuoVJJENwWaU4gp/II3+93+rAMFrVJgZwaRBhFmhXIqUGg/2Gi1axA1gDhzyLwhmYFsgYIjIGzCB7TP4DWDhylo0bt+Rcbr4NwKDuIDuLhruoe0T2ie0Q00vwGi+6UQ4PGkUEAAAAASUVORK5CYII=") no-repeat center right 6px', backgroundSize: '22px'});
+              $('#'+prefix+'_street').val(data.logradouro); $('#'+prefix+'_city').val(data.localidade); $('#'+prefix+'_state').val(data.uf); $('#'+prefix+'_district').val(data.bairro); $('#'+prefix+'_number').focus();
+              disableFields();
+
+            }else{
+              $('.zipcode:first').css({background: 'white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAACT0lEQVR4Xu3agU3DMBAFULoBbAATsEI3gA3oCIzCCLABbNAVmAA2gBE4g09KoyT23f+XFOkqRU2lxLGf72wnze4iP78Cu3T4E0iIGgkJkRCng0JGREZERsTkRJmpkamRqbFKatzKVY6yPcr2ErRqfZByn2Tby/bOugZzjFCEy1q5QwBGQXiu5X8zMVgQYwTtKCbGEEHLp2EwIOYQmBhTCFQMFKKFwMBYQqBhIBC9CAhGDwIFwwthRfBgWBBgDA+EF8GC4UGAMKwQKEIPBoLgxrBCfMiVrkmLmKmplYGg1fuUnZveulohWBExFRlMBPP6wgpRGhCBUcrVFWNvJ84dZ0YoBXkgIjDQxrvHBj3RC3GOGK5IYECcEwaEgKTGMJTZY4Y1TWAEFsSWkUFBYEJsgUFDYEOsiUFFiIBYA4OOEAURiRGCEAkRgRGGEA3BvHfQKfUgOyFPx5GV5dJ8H4EQihEBEYkQhsGGWAMhBIMJsSYCHYMFsQUCFYMBsSWCYtzLzpv1bm14PApxDgilPfAaA4G4kwq8Ir1APhfC8EIwn0GUBpSP/ouO+LgxPBBshH1t+XFLDCtEBIK+7BFZdjPKrBBfwb3GxrhqCtQDrBCMWaKVxywM0w2aFaL4IRgtBO1AFMOEUC7qgfBi9CKgGGYEBMKKYUXwYrgQUIheDC+CFcONwIBoYaAIvRgQAgtiDoOF0MKAEZgQYww2whwGBYENoRj014NVoX6HvObsnT5Hdfv/PxOi9mFCJMRpOmdEZERkRExOcZkamRqZGpkaS+vfH9T+q0NoDTTRAAAAAElFTkSuQmCC") no-repeat center right 6px', backgroundSize: '22px'});
+               $("#"+getType()+"_addresses_attributes_0_street").val(""); $("#"+getType()+"_addresses_attributes_0_district").val("");  $("#"+getType()+"_addresses_attributes_0_number").focus();
+              enableFields();
+            }
+          },
+          error: function(data) {
+            $('.zipcode:first').css({background: 'white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAACT0lEQVR4Xu3agU3DMBAFULoBbAATsEI3gA3oCIzCCLABbNAVmAA2gBE4g09KoyT23f+XFOkqRU2lxLGf72wnze4iP78Cu3T4E0iIGgkJkRCng0JGREZERsTkRJmpkamRqbFKatzKVY6yPcr2ErRqfZByn2Tby/bOugZzjFCEy1q5QwBGQXiu5X8zMVgQYwTtKCbGEEHLp2EwIOYQmBhTCFQMFKKFwMBYQqBhIBC9CAhGDwIFwwthRfBgWBBgDA+EF8GC4UGAMKwQKEIPBoLgxrBCfMiVrkmLmKmplYGg1fuUnZveulohWBExFRlMBPP6wgpRGhCBUcrVFWNvJ84dZ0YoBXkgIjDQxrvHBj3RC3GOGK5IYECcEwaEgKTGMJTZY4Y1TWAEFsSWkUFBYEJsgUFDYEOsiUFFiIBYA4OOEAURiRGCEAkRgRGGEA3BvHfQKfUgOyFPx5GV5dJ8H4EQihEBEYkQhsGGWAMhBIMJsSYCHYMFsQUCFYMBsSWCYtzLzpv1bm14PApxDgilPfAaA4G4kwq8Ir1APhfC8EIwn0GUBpSP/ouO+LgxPBBshH1t+XFLDCtEBIK+7BFZdjPKrBBfwb3GxrhqCtQDrBCMWaKVxywM0w2aFaL4IRgtBO1AFMOEUC7qgfBi9CKgGGYEBMKKYUXwYrgQUIheDC+CFcONwIBoYaAIvRgQAgtiDoOF0MKAEZgQYww2whwGBYENoRj014NVoX6HvObsnT5Hdfv/PxOi9mFCJMRpOmdEZERkRExOcZkamRqZGpkaS+vfH9T+q0NoDTTRAAAAAElFTkSuQmCC") no-repeat center right 6px', backgroundSize: '22px'});
+             $("#"+getType()+"_addresses_attributes_0_street").val(""); $("#"+getType()+"_addresses_attributes_0_district").val("");  $("#"+getType()+"_addresses_attributes_0_number").focus();//
+            enableFields();
+          }
+        });
+      }
+    }
+
+    function enableFields(){
+      $("#"+getType()+"_addresses_attributes_0_state").prop( "readonly", false );
+      $("#"+getType()+"_addresses_attributes_0_city").removeAttr( "readonly");
+      $("#"+getType()+"_addresses_attributes_0_state").removeAttr( "readonly");
+      $("#"+getType()+"_addresses_attributes_0_street").prop( "readonly", false );
+      $("#"+getType()+"_addresses_attributes_0_district").prop( "readonly", false );
+      $("#"+getType()+"_addresses_attributes_0_complement").prop( "readonly", false );
+      getStates();
+    };
+
+    function disableFields(){
+      if ($("#"+getType()+"_addresses_attributes_0_street").val() != ""){
+        $("#"+getType()+"_addresses_attributes_0_street").prop( "readonly", true );
+      }else{
+        $("#"+getType()+"_addresses_attributes_0_street").prop( "readonly", false );
+      };
+      if ($("#"+getType()+"_addresses_attributes_0_district").val() != ""){
+        $("#"+getType()+"_addresses_attributes_0_district").prop( "readonly", true );
+      }else{
+        $("#"+getType()+"_addresses_attributes_0_district").prop( "readonly", false );
+      };
+
+      $("#"+getType()+"_addresses_attributes_0_state").attr("readonly", "readonly");
+      $("#"+getType()+"_addresses_attributes_0_city").attr("readonly", "readonly");
+    };

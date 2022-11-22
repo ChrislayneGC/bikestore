@@ -1,0 +1,93 @@
+.row
+  .col-xs-12.col-sm-12.col-md-8
+    h4(style="margin-top: 0;") <strong>Formas de pagamento</strong>
+    .row
+      .col-xs-12.col-sm-4.col-md-4
+        a.btn.btn-default.btn-block.payment-btn aria-controls="collapseCard" aria-expanded="false" data-toggle="collapse" href="#collapseCard" role="button"
+          h1.text-center
+            i.fa.fa-credit-card
+            br
+            small Cartão de Crédito
+
+      .col-xs-12.col-sm-4.col-md-4
+        = simple_form_for @order, url: [:consultant, @order, :billet], method: 'post', html: {class: "form-vertical"} do |f|
+          = f.input :id, as: 'hidden'
+          button.btn.btn-default.btn-block.payment-btn(type="submit")
+            h1.text-center
+              i.fa.fa-barcode
+              br
+              small Boleto Bancário
+
+    .collapse#collapseCard
+      .col-xs-12.col-sm-8.col-md-8
+        .row
+          .panel.panel-default(style="margin: 15px 0;")
+            .panel-body(style="padding: 15px;")
+              = simple_form_for @order, url: [:consultant, @order, :credit_card], html: {id: "payment-form"}, method: 'post' do |f|
+                = f.input :id, as: 'hidden'
+                <input type="text" name="token" id="token" value="" readonly="true" size="64" style="text-align:center" hidden/>
+                  .form-group
+                    input.credit_card_number[autocomplete="off" data-iugu="number" name="cc[number]" placeholder="Número do Cartão" type="text" value="" class="form-control"]
+                  .form-group
+                    input.credit_card_cvv[autocomplete="off" data-iugu="verification_value" name="cc[cvv]" placeholder="CVV" type="text" value="" class="form-control"]
+                  .form-group
+                    input.credit_card_name[data-iugu="full_name" placeholder="Titular do Cartão" name="cc[holder]" type="text" value="" class="form-control"]
+                  .form-group
+                    .row
+                      .col-xs-12.col-sm-3.col-md-3
+                        input.credit_card_expiration.carddate[autocomplete="off" data-iugu="expiration" name="cc[exp_month]" placeholder="MM" type="text" value="" class="form-control"]
+                      .col-xs-12.col-sm-3.col-md-3
+                        input.credit_card_expiration.carddate[autocomplete="off" data-iugu="expiration" name="cc[exp_year]" placeholder="AA" type="text" value="" class="form-control"]
+                      .col-xs-12.col-sm-6.col-md-6
+                        select(class="form-control" name="cc[brand]")
+                          option value="visa"  Visa
+                          option value="mastercard"  MasterCard
+
+                  .row
+                    .col-xs-12.col-sm-4.col-md-4
+                      button.btn.btn-primary.btn-block(type="submit") Finalizar
+                  .usable-creditcard-form
+                    .footer
+                      img[src="http://storage.pupui.com.br/9CA0F40E971643D1B7C8DE46BBC18396/assets/cc-icons.e8f4c6b4db3cc0869fa93ad535acbfe7.png" alt="Visa, Master, Diners. Amex" border="0"]
+
+  .col-xs-12.col-sm-12.col-md-4
+    h4(style="margin-top: 0;") <strong>Resumo do pedido</strong>
+    table.table.cart-table
+      thead
+        tr
+          th.text-center Item
+          th.text-center(width="150px") Valor R$
+          th.text-center Quantidade
+      tbody
+        - @order.items.each do |item|
+          - item_price = (item.price.to_f * item.quantity)
+          tr
+            td.text-center
+              = image_tag(item.item.s3_image.present? ? item.item.s3_image : "http://placehold.it/185x185", alt: item.to_s, class: "img-thumbnail", style: 'width: 60px;')
+              p
+                strong.cblue #{item.item.name}
+            td.text-center
+              p
+                strong.text-block.cgreen= number_to_currency(item.total)
+              p
+                small #{number_to_currency(item.price)} un.
+            td.text-center
+              strong.text-block.cgreen= item.quantity
+      tfoot
+        tr
+          td(colspan="5" class="bclean total-price")
+            <strong>Total dos itens: <span class="cgreen btn-mr">#{number_to_currency(@order.total.to_f)}</span></strong>
+        tr
+          td(colspan="5" class="bclean total-price")
+            <strong>Frete: <span class="cgreen btn-mr">#{number_to_currency(@order.shipping.value.to_f)}</span></strong>
+        tr
+          td(colspan="5" class="bclean total-price")
+            <strong>Total do Pedido: <span class="cgreen btn-mr">#{number_to_currency(@order.total.to_f + @order.shipping.value.to_f)}</span></strong>
+
+- content_for :script do
+  javascript:
+
+    $( document ).ready(function() {
+      $('.navbar-main').removeClass('navbar-transparent');
+      $('#edit-shipping').validate();
+    });

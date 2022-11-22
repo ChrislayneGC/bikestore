@@ -1,0 +1,83 @@
+- content_for :head do
+  title Forbike | Minha Conta
+  meta name="description" content=""
+
+.title-area
+  .container
+    center: h1 Minha Conta
+    ol.breadcrumb
+      li= link_to "<i class='icon icon-home'></i>".html_safe, [:root]
+      li.active Minha Conta
+
+.section-half
+  .container
+    .row
+      .col-xs-12.col-sm-12.col-md-6
+        h3.section-title Meus Dados
+        .panel.panel-default.panel-supliers
+          .panel-heading
+            h3 Meus Dados
+          .panel-body
+            .row
+              .col-xs-12.col-sm-9.col-md-9
+                p <strong>Nome:</strong> #{@consultant.name}
+                p <strong>Telefone:</strong> #{@consultant.phone}
+                p <strong>Data de cadastro:</strong> #{l(@consultant.created_at, format: :custom)}
+                p <strong>Endereço:</strong> #{@consultant.addresses.first}
+                = link_to "Editar meus dados", edit_customer_account_path(@consultant), class: 'btn btn-default'
+                = link_to "Editar meus endereços", edit_address_customer_account_index_path(), class: 'btn btn-default'
+      .col-xs-12.col-sm-12.col-md-6
+        .row
+          .col-xs-12.col-sm-12.col-md-12
+            h3.section-title Meus Pedidos
+            - if @orders.present?
+              #accordion.panel-group aria-multiselectable="true" role="tablist"
+                - @orders.each do |o|
+                  .panel.panel-default
+                    .panel-heading role="tab" id="heading1#{o.id}"
+                      .row
+                        .col-xs-12.col-sm-6.col-md-6
+                          = link_to "#{l(o.created_at, format: :long)}", "#collapse1#{o.id}", aria: {controls: "collapse1#{o.id}", expanded: 'false'}, data: {parent: '#accordion', toggle: 'collapse'}, role: 'button'
+                        .col-xs-12.col-sm-6.col-md-6= link_to "Detalhes", customer_order_path(o), class: 'btn btn-blue pull-right'
+                    .panel-collapse.collapse(aria-labelledby="heading1#{o.id}" role="tabpanel" id="collapse1#{o.id}")
+                      .panel-body
+                        .row
+                          .col-xs-12.col-sm-6.col-md-6
+                            p <strong>Total: </strong>#{number_to_currency(o.total)}
+                            p <strong>Modo de Pagamento: </strong><br>#{o.payment_method}
+                            p <strong>Status do Pagamento: </strong> #{o.status_br}
+
+            - else
+              p Não há pedidos para exibir...
+
+        .row
+          .col-xs-12.col-sm-12.col-md-12
+            h3.section-title Boletos pendentes
+            - if @orders_waiting.present?
+              - @orders_waiting.each do |ow|
+                .panel.panel-default
+                  .panel-heading role="tab" id="heading#{ow.id}"
+                    .row
+                      .col-xs-12.col-sm-6.col-md-6
+
+                        = link_to "#{l(ow.created_at, format: :long)}", "#collapse#{ow.id}", aria: {controls: "collapse#{ow.id}", expanded: 'false'}, data: {parent: '#accordion', toggle: 'collapse'}, role: 'button'
+                      .col-xs-12.col-sm-6.col-md-6= link_to "Detalhes", customer_order_path(ow), class: 'btn btn-blue pull-right'
+                  .panel-collapse.collapse(aria-labelledby="heading#{ow.id}" role="tabpanel" id="collapse#{ow.id}")
+                    .panel-body
+                      .row
+                        .col-xs-12.col-sm-6.col-md-6
+                          p <strong>Total: </strong>#{number_to_currency(ow.total)}
+                          p <strong>Modo de Pagamento: </strong><br>#{ow.payment_method}
+                          p <strong>Status do Pagamento: </strong> #{ow.status_br}
+                          = link_to "Boleto", ow.billet_url, class: "btn btn-success", target: :_blank
+
+
+            - else
+              p Não há pedidos para exibir...
+
+
+
+
+
+- content_for :script do
+  javascript:

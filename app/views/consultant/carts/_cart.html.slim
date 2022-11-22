@@ -1,0 +1,72 @@
+.checkout-steps
+
+  = link_to '<i class="icon icon-step-02"></i>'.html_safe, [:root], title: "Identificação"
+  = link_to '<i class="icon icon-step-03"></i>'.html_safe, nil, title: "Selecionar endereço"
+  = link_to '<i class="icon icon-step-04"></i>'.html_safe, nil, title: "Selecionar endereço"
+  = link_to '<i class="icon icon-step-05"></i>'.html_safe, nil, title: "Pagamento"
+
+- if @cart.present? && @cart.items.any?
+  table.table.table-bordered.table-cart
+    thead
+      tr.dark-gray-bg
+        th Descrição do item
+        th.text-center(width="150px") Valor
+        th.text-center Quantidade
+        th.text-center(width="100px") Remover
+    tbody
+      - @cart.items.each do |item|
+        - item_price = (item.price.to_f * item.quantity)
+        tr
+          td
+            .item-image
+              = image_tag(item.item.image.present? ? item.item.image : item.item.image.url, alt: item.to_s, style: 'max-width: 20%; float: left;')
+            .item-description
+              h4
+                strong.cblue #{item.item.name}
+              p
+                small.text-block= item.item.description
+              - if @target.present? && @target["id"].to_i == item["id"]
+                p
+                  .alert.alert-info
+                    center: strong= @target["info"]
+          td.text-center
+            strong.text-block.cgreen= number_to_currency(item.total)
+            br
+            small #{number_to_currency(item.price)} un.
+          td.text-center
+            = simple_form_for @cart, url: [:update_item, :consultant, :carts], input_html:{id: "cart-form"}, method: "post", remote: true do |f|
+              = f.input :id, as: 'hidden', input_html:{value:"#{@cart.id}"}
+              = f.fields_for :cart_item do |ff|
+                = ff.input :id, as: 'hidden', input_html: {value: "#{item.id}"}
+                = ff.input :quantity, as: :integer, label: false, input_html: { min: '0', max: '10', onchange: "check()", value: "#{item.quantity}", style: 'display: inline-block; float: left'}
+              button(type="submit" class="cart-item-submit cart-refresh" style="display: inline-block; float:left") <i class="icon icon-refresh"></i>
+
+          td.text-center
+            = link_to '<i class="icon icon-trash"></i>'.html_safe, remove_item_consultant_carts_path(id: item.id), title: "Remover", remote: true, method: 'post', class: 'remove-cart'
+    tfoot
+      tr
+        td(colspan="5" class="bclean")
+          <strong>Total: <span class="cgreen btn-mr">#{number_to_currency(@cart.total.to_f)}</span></strong>
+  = link_to 'Continuar comprando', [:root], title: "Continuar comprando", class: "btn btn-default btn-lg"
+  = link_to 'Avançar <i class="icon icon-chevron-right"></i>'.html_safe, [:shipping_consultant, @cart], method: "post", title: "Finalizar compra", class: "btn btn-blue pull-right btn-lg", data: {confirm: "Ao avançar as será gerado o pedido através das informações do carrinho de compras!"}
+  hr.gap
+- else
+  .text-center
+    h3 <strong>Carrinho vazio!</strong>
+    p Ops! Não há itens no seu carrinho.
+    = link_to "Continuar comprando", [:root], title: "Continuar comprando", class: 'btn btn-default'
+  hr.clear
+
+
+- content_for :script do
+    javascript:
+
+      function check(){
+        var quantity = $('#update_item_quantity').val();
+        if(quantity > 10){
+          $('#update_item_quantity').val("10");
+        }
+        if(quantity < 1){
+          $('#update_item_quantity').val("1");
+        }
+      }

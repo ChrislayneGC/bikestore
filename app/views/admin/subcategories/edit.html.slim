@@ -1,0 +1,14 @@
+- content_for :head do
+  title  Forbike - Subcategorias
+
+.section.title-area
+  .container
+    h1 Editar Subcategoria
+    ol.breadcrumb
+      li.breadcrumb-item= link_to 'Dashboard', [:admin], title: 'Dashboard'
+      li.breadcrumb-item= link_to 'Subcategorias', [:admin, :subcategories], title: 'Subcategorias'
+      li.breadcrumb-item.active Editar Subcategoria
+
+.section
+  .container
+    = render 'form'

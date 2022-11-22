@@ -1,0 +1,31 @@
+= simple_form_for(address, url: update_address_customer_account_index_path(address), method: 'put') do |f|
+  h4 <strong>Endereço</strong>
+  = f.input :id, as: 'hidden'
+  = f.input :user_id, as: 'hidden'
+  .row
+    .col-xs-12.col-sm-4.col-md-4
+      .form-group
+        = f.input :zipcode, required: true, input_html: {class: "form-control zipcode"}
+    .col-xs-12.col-sm-2.col-md-1
+      .form-group
+        label
+        i(class="pull-left btn btn-default icon icon-search button-labelless" onclick="getAddress('#{index}')" onmouseover="" style="cursor: pointer; margin-top: 4px;")
+    .col-xs-12.col-sm-6.col-md-7
+      .form-group= f.input :street, required: true, input_html: {class: "form-control"}
+  .row
+    .col-xs-12.col-sm-6.col-md-6
+      .form-group= f.input :district, required: true, input_html: {class: "form-control"}
+    .col-xs-12.col-sm-3.col-md-2
+      .form-group= f.input :number, required: true, input_html: {class: "form-control"}
+    .col-xs-12.col-sm-3.col-md-4
+      .form-group= f.input :kind, collection: Address::KIND, include_blank: "Selecione...", required: true, input_html: {class: "form-control"}
+  .row
+    .col-xs-12.col-sm-12.col-md-12
+      .form-group= f.input :complement, input_html: {class: "form-control"}
+  .row
+    .col-xs-12.col-sm-6.col-md-6
+      .form-group= f.input :state, required: true, input_html: {class: "form-control", onchange: "getCities()"}
+    .col-xs-12.col-sm-6.col-md-6
+      .form-group= f.input :city, required: true, input_html: {class: "form-control"}
+
+  = f.button :submit, class: "btn btn-lg btn-block btn-primary"

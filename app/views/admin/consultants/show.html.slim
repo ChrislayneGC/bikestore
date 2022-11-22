@@ -1,0 +1,49 @@
+- content_for :head do
+  title Forbike - Consultores
+
+.title-area
+  .container
+    h1 Consultores
+
+.container
+  ol.breadcrumb
+    li= link_to '<i class="icon icon-home"></i>'.html_safe, [:admin], title: 'Página Inicial'
+    li= link_to 'Usuários', [:admin, :consultants], title: 'Usuários'
+    li.active Detalhes
+
+
+  .row
+
+    .col-xs-12.col-sm-12.col-md-6
+      h2 Detalhes de #{@consultant}
+      .row
+        .col-xs-12.col-sm-12.col-md-4
+          = image_tag("http://placehold.it/90x90")
+        .col-xs-12.col-sm-12.col-md-8
+          p Nome: #{@consultant.name}
+          p Nickname: #{@consultant.username}
+          p Telefone: #{@consultant.phone}
+          p Data de cadastro: #{l(@consultant.created_at, format: :custom)}
+          p Endereço: #{@consultant.addresses.first}
+
+    .col-xs-12.col-sm-12.col-md-6
+      h3 Meus pedidos
+      .row
+        .col-xs-12.col-sm-12.col-md-12
+          table.table-striped
+            tr
+              th Pedido
+              th Consultor
+              th Valor
+              th Forma de Pagamento
+              th Detalhes do Pedido
+              th Status
+            - @consultant.orders.each do |o|
+              tr.text-center
+                td #{l(o.created_at, format: :short)}
+                td= link_to "#{o.consultant.name}", [:admin, o.consultant]
+                td #{number_to_currency(o.total)}
+                td #{o.payment_method}
+                td= link_to "Detalhes", [:admin, o]
+                td= Order::STATUS[o.payment_status]
+  hr

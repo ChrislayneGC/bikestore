@@ -1,0 +1,87 @@
+doctype html
+html(lang="pt-br")
+  head
+    meta name="charset" content="utf-8"
+    = yield :head
+    link(rel="icon" href="/assets/forbike.png")
+    = stylesheet_link_tag 'backend', media: 'all'
+    = csrf_meta_tags
+    link(href="/assets/icon.png" type="image/ico" rel="shortcut icon")
+    meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"
+    script src="https://use.fontawesome.com/4cac274d2a.js"
+    link(href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css" rel="stylesheet")
+
+
+  body.admin
+    .wrap
+      .header
+        .upper-header.section
+          .container
+            .row
+              .col.text-left
+                p= l(Date.today, format: :short)
+              .col
+                ul.nav.justify-content-end
+                  li.nav-item= link_to "Olá #{current_admin}", [:admin], title: 'Dashboard', class: 'nav-link'
+                  li.nav-item= link_to "Sair", [:destroy, :admin, :session], title: 'Sair', class: 'nav-link', method: 'delete'
+
+        .main-header.section
+          .container
+            nav.navbar.navbar-expand-lg
+              = link_to(image_tag("forbike.png", alt: "Forbike", class: "img-responsive"), [:admin], title: "Forbike", class: 'navbar-brand')
+
+              ul.navbar-nav.ml-auto
+                li.nav-item= link_to "Dashboard".html_safe, [:admin], title: "Dashboard", class: 'nav-link'
+                li.nav-item= link_to 'Clientes', [:admin, :customers], title: "Clientes", class: 'nav-link'
+                li.nav-item= link_to 'Consultores', [:admin, :consultants], title: "Consultores", class: 'nav-link'
+                li.nav-item= link_to "Categorias", [:admin, :categories], title: "Categorias", class: 'nav-link'
+                li.nav-item= link_to "Subcategorias", [:admin, :subcategories], title: "Subcategorias", class: 'nav-link'
+                li.nav-item= link_to "Produtos", [:admin, :items], title: "Produtos", class: 'nav-link'
+                li.nav-item= link_to "Pedidos", [:admin, :orders], title: "Pedidos", class: 'nav-link'
+                li.nav-item= link_to "Banners", [:admin, :banners], title: "Banners", class: 'nav-link'
+                li.nav-item= link_to "Informações de contato", [:admin, :app_info, id: 1], title: "app_info", class: 'nav-link'
+      .main
+        = yield
+    .footer
+    / .page
+    /   .page-header
+    /     nav.navbar.navbar-default.main-nav
+    /       .container
+    /         .navbar-header
+    /           button.navbar-toggle.collapsed(type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="false")
+    /             span.icon-bar
+    /             span.icon-bar
+    /             span.icon-bar
+    /           = link_to(image_tag("logo.png", alt: "Bike", class: "img-responsive"), [:admin], title: "Bike", class: 'navbar-brand')
+    /         .collapse.navbar-collapse
+    /           ul.nav.navbar-nav.navbar-right
+    /             li= link_to "<i class='icon icon-home icon-md icon-mr'></i>".html_safe, [:admin], title: "Gerenciar"
+    /             li= link_to 'Clientes', [:admin, :customers], title: "Clientes"
+    /             li= link_to 'Consultores', [:admin, :consultants], title: "Consultores"
+    /             li= link_to "Categorias", [:admin, :categories], title: "Categorias"
+    /             li= link_to "Subcategorias", [:admin, :subcategories], title: "Subcategorias"
+    /             li= link_to "Produtos", [:admin, :items], title: "Produtos"
+    /             li= link_to "Pedidos", [:admin, :orders], title: "Pedidos"
+    /
+    /   - if flash[:notice]
+    /     .container
+    /       .row
+    /         .col-xs-12.col-sm-12.col-md-12
+    /           .alert.alert-info
+    /             strong #{flash[:notice]}
+    /   - if flash[:alert] || flash[:error]
+    /     .container
+    /       .row
+    /         .col-xs-12.col-sm-12.col-md-12
+    /           .alert.alert-danger
+    /             strong #{flash[:alert]} #{flash[:error]}
+    /
+    /   .page-content= yield
+    /   .page-footer
+    /     .container
+    /       span &copy;Bike
+
+    script(src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous")
+    script( src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous")
+    = javascript_include_tag 'backend'
+    = yield :script

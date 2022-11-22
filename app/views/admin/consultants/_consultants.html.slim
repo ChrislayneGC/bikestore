@@ -1,0 +1,51 @@
+- if params[:action] == "search"
+  .section.not-found style="margin-bottom: 20px;"
+    h3 Sua busca retornou <strong>#{pluralize(@count, 'Consultor', 'Consultores')}</strong>.
+    = link_to 'Limpar busca', [:admin, :consultants], title: "Limpar busca"
+
+
+- if @consultants.any?
+  .data-accordion#accordion role="tablist"
+
+    - @consultants.each do |consultant|
+      .card
+        .card-header id="header-#{consultant.id}" role="tab"
+          = link_to "#{consultant.name}", "#collapse-#{consultant.id}", role: 'button', data: { toggle: 'collapse'}, aria: { expanded: 'true', controls: "collapse-#{consultant.id}"}
+          br
+          small #{l(consultant.created_at, format: :short)}
+
+        .card-body
+          .row
+            .col-xs-12.col-sm-4.col-md-4
+              p <strong>Nome</strong><br> #{consultant.name}
+            .col-xs-12.col-sm-4.col-md-4
+              p <strong>Telefone</strong><br> #{consultant.phone}
+          .row
+            .col-xs-12.col-sm-12.col-md-12
+              p <strong>Endereço</strong><br> #{consultant.addresses.first}
+            .col-12
+              p <strong>Dados bancários</strong><br> #{consultant.accounts.first}
+
+          h4 Meus pedidos
+          table.table
+            thead.thead-light
+              th
+              th Valor
+              th Forma de Pagamento
+              th Detalhes do Pedido
+              th Status
+            tbody
+              //- customer.orders.each do |o|
+              //  tr
+              //    td #{l(o.created_at, format: :short)}
+              //    /td= link_to "#{o.consultant.name}", [:admin, o.consultant]
+              //    td #{number_to_currency(o.total)}
+              //    td #{o.payment_method}
+              //    td= link_to "Detalhes", [:admin, o]
+              //    td= Order::STATUS[o.payment_status]
+
+          = link_to "Editar", [:edit, :admin, consultant], title: 'Editar', class: 'edit'
+
+- else
+  .section.not-found.text-center
+    h3 Desculpe, não existem clientes para exibição.

@@ -1,0 +1,14 @@
+- content_for :head do
+  title Forbike - Clientes
+
+.section.title-area
+  .container
+    h1 Novo Cliente
+    ol.breadcrumb
+      li.breadcrumb-item= link_to 'Dashboard', [:admin], title: 'Dashboard'
+      li.breadcrumb-item= link_to 'Clientes', [:admin, :customers], title: 'Clientes'
+      li.breadcrumb-item.active Novo Cliente
+
+.section
+  .container
+    = render 'form'

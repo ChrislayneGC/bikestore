@@ -1,0 +1,40 @@
+- content_for :head do
+  title Minha conta - Forbike
+
+.section.slider-page
+  .container
+    h1 Minha Conta
+    ol.breadcrumb
+      li.breadcrumb-item= link_to "Home", [:root], title: 'Home'
+      li.breadcrumb-item.active Minha Conta
+
+.section.mb-90
+  .container
+    .row
+      .col-12.col-sm-6.col-md-6
+        h2.title-alt Cadastre-se agora, é <strong>grátis!</strong>
+        p Cadastre-se em nosso site, faça sua compra de maneira segura e ainda receba nossas ofertas por e-mail.
+
+        .row
+          .col-12.col-sm-6.col-md-6= link_to 'Cadastre-se', [:new, :customer, :registration], class: 'btn btn-block btn-signup btn-block', title: 'Cliente'
+      .col-12.col-sm-6.col-md-6
+        h2.title-alt Acesse sua conta
+        = simple_form_for(resource, as: :user, url: user_session_path) do |f|
+          .form-group
+            = f.input :email, required: false, label: 'E-mail', input_html: {class: "form-control", placeholder: "E-mail"}
+          .form-group
+            = f.input :password, required: false, label: 'Senha', input_html: {class: "form-control", placeholder: "Senha"}
+          .form-check
+            = f.input :remember_me, label: "Lembrar-me neste computador?", as: :boolean if devise_mapping.rememberable?
+
+          = f.button :submit, "Acessar minha conta", class: "btn btn-primary"
+
+        = link_to "Esqueci minha senha" , new_user_password_path(), class: 'link-form', title: 'Esqueci minha senha'
+
+
+
+- content_for :script do
+  javascript:
+    $(document).on('ready', function(){
+      $('.navbar-main').removeClass('navbar-transparent');
+    });

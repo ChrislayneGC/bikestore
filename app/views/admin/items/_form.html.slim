@@ -1,0 +1,67 @@
+= simple_form_for @item, url:[:admin, @item], html: { class: 'form-admin'} do |f|
+  .row
+    .col-3
+      .nested-image
+        = image_tag(f.object.s3_image.present? ? f.object.s3_image : "http://placehold.it/480x270", class: 'img-fluid')
+        .form-group= f.input :image, label: false, as: :file,  input_html: {data:{target: 'image'}, onchange: 'javascript:imagePreview(this, event)'}
+      #images
+        = f.fields_for :images do |image|
+          = render 'image_fields', f: image
+        .links
+          = link_to_add_association 'incluir imagem', f, :images
+    .col-9
+      .row
+        .col-4
+          .form-group= f.input :code , required: false, input_html: {class:"form-control"}, label: "Código"
+        .col-4
+          .form-group= f.input :name, required: true, input_html: {class:"form-control"}, label: "Nome"
+        .col-4
+          .form-group= f.association :subcategory, collection: Subcategory.all, label: "Subcategoria", input_html: {class:"form-control"}, prompt: "Selecione uma Subcategoria"
+
+      .row
+        .col-8
+          .form-group= f.input :description, required: true, input_html: {class:"form-control"}
+        .col-4
+          .form-group= f.input :price, required: true, input_html: {class: "form-control currency", value: "#{@item.new_record? ? '0,00' : @item.price.to_s}" }, as: 'string', label: "Preço"
+
+      .row
+        .col
+          .form-group= f.input :quantity, required: true, input_html:{class: "form-control"}, as: 'string', label: "Quantidade Disponível"
+        .col
+          .form-group= f.input :weight, required: true, input_html: {class: "form-control"}, label: "Peso kg"
+        .col
+          .form-group= f.input :height, required: true, input_html: {class:"form-control"},label: "Altura cm"
+        .col
+          .form-group= f.input :length, required: true, input_html: {class:"form-control"}, label: "Largura cm"
+        .col
+          .form-group= f.input :width, required: true, input_html: {class:"form-control"}, label: "Comprimento cm"
+
+      .form-group= f.input :text, as: :summernote, required: true, input_html: {class:"form-control summernote"}
+
+      .form-check
+        = f.input :active, label: 'Produto ativo?', required: false
+        small Se esta opção estiver marcada, indica que o produto está disponível para acesso.
+      .form-check
+        = f.input :highlight, label: 'Produto em destaque?', required: false
+        small Se esta opção estiver marcada, indica que o produto está em destaque.
+
+      = f.submit style: "padding-left: 15px; padding-right: 15px;", data: {disable_with: "aguarde..."}
+
+- content_for :script do
+  javascript:
+
+
+    $( document ).ready(function() {
+      console.log( "ready!" );
+      applyInputMasks();
+    });
+
+    fileFieldStyle();
+    function imagePreview(input, event) {
+      if(input.files && input.files[0]) {
+        var target = $(input).parents('.nested-fields').find('img');
+        var reader = new FileReader();
+        reader.onload = function(e) { target.attr('src', e.target.result).width(200); }
+      }
+      reader.readAsDataURL(input.files[0]);
+    }

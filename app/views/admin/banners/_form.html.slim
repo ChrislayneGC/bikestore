@@ -1,0 +1,10 @@
+.row.justify-content-center
+  .col-6
+    .form-group
+      .div
+        = simple_form_for(@banner, url: [:admin, @banner], html: { multipart: true, class: 'form-admin' }) do |f|
+          = f.label :Ativa?
+          = f.check_box :active 
+          = f.label :imagem
+          = f.file_field :image
+          = f.button :submit,  style: "padding-left: 15px; padding-right: 15px;"

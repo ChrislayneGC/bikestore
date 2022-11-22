@@ -1,0 +1,25 @@
+- content_for :head do
+  title Forbike - Produtos
+
+.section.title-area
+  .container
+    h1 Produtos
+    ol.breadcrumb
+      li.breadcrumb-item= link_to 'Dashboard', [:admin], title: 'Dashboard'
+      li.breadcrumb-item.active Produtos
+
+.section
+  .container
+    .row
+      .col-3
+        .section.aside
+          = link_to "Novo Produto", [:new, :admin, :item]
+          = simple_form_for :search, url: [:search, :admin, :items], html: {class: "form-admin"}, method: :get, remote: true do |f|
+            h6 Filtrar Itens
+            .form-group= f.input :name, label: "Nome/Código", placeholder: "Nome ou código", input_html:{class:"form-control"}
+            = f.submit "BUSCAR", class: "btn btn-default btn-block squared", style: 'margin-bottom: 10px;'
+
+      .col-9
+        .result-set
+          = render 'items'
+        = paginate @items, remote: (params[:action] == "search")

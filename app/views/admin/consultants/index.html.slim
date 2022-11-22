@@ -1,0 +1,25 @@
+- content_for :head do
+  title Forbike - Consultores
+
+.section.title-area
+  .container
+    h1 Consultores
+    ol.breadcrumb
+      li.breadcrumb-item= link_to 'Dashboard', [:admin], title: 'Dashboard'
+      li.breadcrumb-item.active Consultores
+
+.section
+  .container
+    .row
+      .col-3
+        .aside.section
+          = link_to 'Novo Consultor', [:new_admin_consultant], title: 'Novo Consultor'
+          = simple_form_for :search, url: [:search, :admin, :consultants], html: {class: "form-admin"}, method: :get, remote: true do |f|
+            h6 Filtrar Consultores
+            .form-group
+              = f.input :criteria, input_html: { class: "form-control" }, label: "Buscar consultores:", as: 'search', placeholder: '...'
+            = f.submit "BUSCAR", class: "btn-block"
+      .col-9
+        .result-set
+          = render 'consultants'
+        = paginate @consultants

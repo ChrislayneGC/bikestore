@@ -1,0 +1,102 @@
+.row.justify-content-center
+  .col-6
+    = simple_form_for(@consultant, url: [:admin, @consultant], html: { class: 'form-admin'}) do |f|
+      h6 Dados Pessoais
+      = f.input :type , as: 'hidden', input_html: {value: "#{@type}", class: "type"}
+      = f.input :password , as: 'hidden', input_html: {value: "#{Devise.friendly_token.first(8)}"}
+      .form-group= f.input :name, required: true, autofocus: true, input_html: {class: "form-control"}
+      .row
+        .col-6
+          .form-group= f.input :email, required: true, autofocus: true, input_html: {class: "form-control"}
+        .col-6
+          .form-group= f.input :phone, required: true, input_html: {class: "form-control phone"}, as: :string
+      .form-group= f.input :identifier, required: true, input_html: {class: "form-control"}
+      .form-check
+        = f.input :active, label: 'Consultor ativo?'
+        small Se esta opção estiver marcada, indica que o usuário ativado no sistema.
+
+      hr
+      h6 Endereço
+      = f.simple_fields_for :addresses do |ff|
+        = ff.input :id, as: 'hidden'
+        = ff.input :user_id, as: 'hidden'
+        .row
+          .col-6
+            .form-group= ff.input :zipcode, input_html: {class: "form-control zipcode", onchange: "getAddress('guide_request')"}, label: "CEP", required: true
+          .col-1
+            i(class="pull-left btn btn-default icon icon-search button-labelless" onclick="getAddress()" onmouseover="" style="cursor: pointer;")
+
+        .form-group= ff.input :street, required: true, input_html: {class: "form-control"}
+
+        .row
+          .col-3
+            .form-group= ff.input :number, required: true, input_html: {class: "form-control"}
+          .col-9
+            .form-group= ff.input :district, required: true, input_html: {class: "form-control"}
+
+        .row
+          .col-4
+            .form-group= ff.input :kind, collection: Address::KIND, include_blank: "Selecione...", required: true, input_html: {class: "form-control"}
+          .col-4
+            .form-group= ff.input :state, required: true, input_html: {class: "form-control", onchange: "getCities()"}
+          .col-4
+            .form-group= ff.input :city, required: true, input_html: {class: "form-control"}
+
+      hr
+      h6 Dados Bancário
+      = f.simple_fields_for :accounts do |fff|
+        .row
+          .col-6
+            .form-group= fff.input :name, label: "Nome", input_html: {class: "form-control"}
+          .col-3
+            .form-group= fff.input :agency, label: "Agência", input_html: {class: "form-control"}
+          .col-3
+            .form-group= fff.input :account, label: "Conta", input_html: {class: "form-control"}
+        .row
+          .col-6
+            .form-group= fff.input :bank, label: "Banco", input_html: {class: "form-control"}
+          .col-6
+            .form-group= fff.input :identifier, label: "CPF/CNPJ", input_html: {class: "form-control"}
+
+        .form-check
+          = fff.input :active, label: 'Conta ativa?'
+          small Se esta opção estiver marcada, indica que a conta está ativada no sistema.
+
+      = f.button :submit,  style: "padding-left: 15px; padding-right: 15px;"
+
+- content_for :script do
+javascript:
+
+  function getType(){
+    var type = "Consultant";
+    return type.toLowerCase();
+  };
+
+  function getAddress() {
+    prefix = getType();
+    var zipcode = $('.zipcode:first').val().replace('-', '');
+    if(zipcode.length >= 8) {
+      $.ajax({
+        url: 'https://viacep.com.br/ws/'+zipcode+'/json', dataType: 'json', cache: true,
+        beforeSend: function() {
+          $('.zipcode:first').css({background: 'white url("/assets/Bike-loader.gif") no-repeat center right 6px', backgroundSize: '16px'});
+        },
+        success: function(data) {
+          if(data.erro != true){
+            $('.zipcode:first').css({background: 'white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAADiUlEQVR4Xu2ai3ETMRCG4wpCCU4FgQowFSSpAFMBUAFOBYEKSCpIUgGmAqACTAfQAfuDxFyEpH2cTtY5uhlNnLNe+2n170rJ4qg/fwgsOoe/BDoI5wkdRAfxUBS6R3SPeBwecUxmbqg8jUTFr/Tubfj+ELfGczLymsoyAWFF738dOoh3zhNi6RE8IQrhkPIIbIU7Z2gMAr5bxzzBVz6ErXFKxmypPIkRcIAuEt/9ez13EC+dHqTszG6HYaM5g/jo3H00hLlqBPTgmsp5xt3FnjBXjQAE6EEsP/A2/XTf/+B0Ya5bA6II9V9mDASEFZVvGghz2hpcZPB2Y7vcayHMBYQUwpoMurFAmAOIMyeMqRzB2w3xfGWF0DoILkfwdiNCPBsDoWUQUggQR4jnf4coLZgWEyopBNiKMKqOEDFIrYHAEXorXM1R4hiO0RIIaXSADaPFsVUQGgjq9FniYS14hAaCOXPkYOwbBM4OWGEov+QpqgvDASUgMFkkNKpDjMAqyQFq2A3OGewFi2DcaBUOhJ8sVuwNFXMKGxn9E71bCSe+o3oIlaPzhdR4ORCxFWPv/oSGcZcqYTfF8gUtiJzbYnWwVz8LjQ6rvaYX7xVtN1T3UlHfVDXlEV+cK+Y6tUwQhyh4lfQpco6QDJYCcUuNc1dhvm9MFPUkQqoJk+jfdNMkMTpWJwVCE9YwYU5INf35eaLPD1bDtO1yYokVxIpLn5yQaiIExttSeSEduEQ9LnxqhW1Hk1pTGQpp7s9wMRuKHa01gDgQ6Eu7mmizoQKl14oj2prvHTWGh3UlILC/sdLcdVnYt0+dNe0mzR5zoCQg0F5zT2BdmL1sCT9ZKQjUv6ICJZ/qgbaUTOFV89SAQMeSREs1AVd5Sz+rRgmLRgzbaJMiCZSqiVNqQlqPQD/akMrBqJo4lQSBvqQpOAeh2lmCm4jFI9CnNaSG85n8eM0B8N9bQaC9JVkazmtDv0x+vK4BAmNYQ+qO2k564yQFUMIj/BbRXL76cVf0wXqxo7VRVH/M1vADaLPOvaXROSIlQKB/6QmziZwhBqQUCPQtyTqbEsghkJIguIscCOSJaMPuoVJJENwWaU4gp/II3+93+rAMFrVJgZwaRBhFmhXIqUGg/2Gi1axA1gDhzyLwhmYFsgYIjIGzCB7TP4DWDhylo0bt+Rcbr4NwKDuIDuLhruoe0T2ie0Q00vwGi+6UQ4PGkUEAAAAASUVORK5CYII=") no-repeat center right 6px', backgroundSize: '22px'});
+            $('#'+prefix+'_addresses_attributes_0_street').val(data.logradouro); $('#'+prefix+'_addresses_attributes_0_city').val(data.localidade); $('#'+prefix+'_addresses_attributes_0_state').val(data.uf); $('#'+prefix+'_number').focus();
+            $("#"+getType()+"_addresses_attributes_0_state").empty();
+            $("#"+getType()+"_addresses_attributes_0_city").empty();
+          }else{
+            $('.zipcode:first').css({background: 'white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAACT0lEQVR4Xu3agU3DMBAFULoBbAATsEI3gA3oCIzCCLABbNAVmAA2gBE4g09KoyT23f+XFOkqRU2lxLGf72wnze4iP78Cu3T4E0iIGgkJkRCng0JGREZERsTkRJmpkamRqbFKatzKVY6yPcr2ErRqfZByn2Tby/bOugZzjFCEy1q5QwBGQXiu5X8zMVgQYwTtKCbGEEHLp2EwIOYQmBhTCFQMFKKFwMBYQqBhIBC9CAhGDwIFwwthRfBgWBBgDA+EF8GC4UGAMKwQKEIPBoLgxrBCfMiVrkmLmKmplYGg1fuUnZveulohWBExFRlMBPP6wgpRGhCBUcrVFWNvJ84dZ0YoBXkgIjDQxrvHBj3RC3GOGK5IYECcEwaEgKTGMJTZY4Y1TWAEFsSWkUFBYEJsgUFDYEOsiUFFiIBYA4OOEAURiRGCEAkRgRGGEA3BvHfQKfUgOyFPx5GV5dJ8H4EQihEBEYkQhsGGWAMhBIMJsSYCHYMFsQUCFYMBsSWCYtzLzpv1bm14PApxDgilPfAaA4G4kwq8Ir1APhfC8EIwn0GUBpSP/ouO+LgxPBBshH1t+XFLDCtEBIK+7BFZdjPKrBBfwb3GxrhqCtQDrBCMWaKVxywM0w2aFaL4IRgtBO1AFMOEUC7qgfBi9CKgGGYEBMKKYUXwYrgQUIheDC+CFcONwIBoYaAIvRgQAgtiDoOF0MKAEZgQYww2whwGBYENoRj014NVoX6HvObsnT5Hdfv/PxOi9mFCJMRpOmdEZERkRExOcZkamRqZGpkaS+vfH9T+q0NoDTTRAAAAAElFTkSuQmCC") no-repeat center right 6px', backgroundSize: '22px'});
+             $("#"+getType()+"_addresses_attributes_0_street").val(""); $("#"+getType()+"_addresses_attributes_0_district").val("");  $("#"+getType()+"_addresses_attributes_0_number").focus();
+          }
+        },
+        error: function(data) {
+          $('.zipcode:first').css({background: 'white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAACT0lEQVR4Xu3agU3DMBAFULoBbAATsEI3gA3oCIzCCLABbNAVmAA2gBE4g09KoyT23f+XFOkqRU2lxLGf72wnze4iP78Cu3T4E0iIGgkJkRCng0JGREZERsTkRJmpkamRqbFKatzKVY6yPcr2ErRqfZByn2Tby/bOugZzjFCEy1q5QwBGQXiu5X8zMVgQYwTtKCbGEEHLp2EwIOYQmBhTCFQMFKKFwMBYQqBhIBC9CAhGDwIFwwthRfBgWBBgDA+EF8GC4UGAMKwQKEIPBoLgxrBCfMiVrkmLmKmplYGg1fuUnZveulohWBExFRlMBPP6wgpRGhCBUcrVFWNvJ84dZ0YoBXkgIjDQxrvHBj3RC3GOGK5IYECcEwaEgKTGMJTZY4Y1TWAEFsSWkUFBYEJsgUFDYEOsiUFFiIBYA4OOEAURiRGCEAkRgRGGEA3BvHfQKfUgOyFPx5GV5dJ8H4EQihEBEYkQhsGGWAMhBIMJsSYCHYMFsQUCFYMBsSWCYtzLzpv1bm14PApxDgilPfAaA4G4kwq8Ir1APhfC8EIwn0GUBpSP/ouO+LgxPBBshH1t+XFLDCtEBIK+7BFZdjPKrBBfwb3GxrhqCtQDrBCMWaKVxywM0w2aFaL4IRgtBO1AFMOEUC7qgfBi9CKgGGYEBMKKYUXwYrgQUIheDC+CFcONwIBoYaAIvRgQAgtiDoOF0MKAEZgQYww2whwGBYENoRj014NVoX6HvObsnT5Hdfv/PxOi9mFCJMRpOmdEZERkRExOcZkamRqZGpkaS+vfH9T+q0NoDTTRAAAAAElFTkSuQmCC") no-repeat center right 6px', backgroundSize: '22px'});
+           $("#"+getType()+"_addresses_attributes_0_street").val(""); $("#"+getType()+"_addresses_attributes_0_district").val("");  $("#"+getType()+"_addresses_attributes_0_number").focus();//
+
+        }
+      });
+    }
+  }

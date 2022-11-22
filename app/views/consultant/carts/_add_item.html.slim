@@ -1,0 +1,17 @@
+.modal-header
+  button.close(data-dismiss="modal" type="button")
+    span(aria-hidden="true") &times;
+    span.sr-only Fechar
+  h4.modal-title Item adicionado ao seu carrinho!
+.modal-body
+  .row.item-info
+    .col-xs-12.col-sm-4.col-md-4
+      figure.item-image= image_tag(@item.image, alt: @item, title: @item, class: "img-responsive")
+    .col-xs-12.col-sm-8.col-md-8
+      h2.item-title= @item.name
+      .item-attrs <strong>Qtde: </strong><span>1 un</span>
+      h3(class="corange" style="margin-bottom:5px" id="@item-price" data-value="#{@item.price.to_f}")= number_to_currency(@item.price)
+
+.modal-footer
+  button.btn.btn-default(data-dismiss="modal" type="button") Fechar
+  = link_to '<i class="icon icon-shopping-cart"></i> Consultar carrinho'.html_safe, [:consultant, @cart], method: 'get', title: 'Ir para o carrinho', class: 'btn btn-success'

@@ -1,0 +1,64 @@
+.row
+  .col-12.col-sm-8.col-md-8
+    h2.title-cart Formas de Pagamento
+
+    .section
+      p As vendas realizadas através do nosso site, são aceitas pelos principais meios de pagamento, utilizando a plataforma PAGSEGURO, você terá além da comodidade em realizar o pagamento por mais de 16 bandeiras de Cartões de Crédito, poderá realizar através de boleto e um ambiente seguro, pois o PagSeguro utiliza diversos protocolos de segurança para manter suas informações em segurança. Quando você envia um pagamento através do PagSeguro, o site vendedor não tem acesso aos seus dados financeiros, tais como: o número do seu cartão de crédito ou dados bancários. Além disso, a plataforma possui um processo de custódia de pagamento que aumenta a segurança nas transações entre compradores e vendedores.
+      h2.title-cart CONFIRA AS FORMAS DE PAGAMENTO ACEITAS PELO PAGSEGURO
+      img alt="Formas de pagamento" src="/assets/painel_formas_pagamento.png"
+      .row
+        / .col-12.col-sm-4.col-md-4
+        /   = link_to '#creditCard', data: {toggle: 'collapse'}, role: 'button', class: 'payment-btn' do
+        /       i.fa.fa-credit-card
+        /       span Cartão de Crédito
+
+        .col-12.col-sm-4.col-md-4
+          /= simple_form_for @order, url: [:customer, @order, :billet], method: 'post' do |f|
+          /  = f.input :id, as: 'hidden'
+          /  button.payment-btn(type="submit")
+          /    i.fa.fa-barcode
+          /    span PagSeguro
+
+
+  .col-12.col-sm-4.col-md-4
+    h2.title-cart Resumo do Pedido
+    .table-responsive
+      table.table.table-cart
+        thead.thead-dark
+          tr
+            th
+            th.text-center Valor
+            th.text-center Quantidade
+        tbody
+          - @order.items.each do |item|
+            - item_price = (item.price.to_f * item.quantity)
+            tr
+              td
+                strong #{item.item.name}
+              td
+                strong= number_to_currency(item.total)
+                br
+                small #{number_to_currency(item.price)} un.
+              td.text-center
+                strong= item.quantity
+        tfoot
+          tr
+            td.text-right(colspan="3") <strong>Total: </strong>#{number_to_currency(@order.total.to_f)}</span>
+          tr
+            td.text-right(colspan="3") <strong>Frete: </strong>#{number_to_currency(@order.shipping.value.to_f)}
+          tr
+            td.text-right(colspan="3") <strong>Total do Pedido: </strong>#{number_to_currency(@order.total.to_f + @order.shipping.value.to_f)}
+    = simple_form_for @order, url: [:customer, @order, :billet], method: 'post' do |f|
+      = f.input :id, as: 'hidden'
+      button.payment-btn(type="submit")
+        i
+        span         
+
+
+- content_for :script do
+  javascript:
+
+    $( document ).ready(function() {
+      $('.navbar-main').removeClass('navbar-transparent');
+      $('#edit-shipping').validate();
+    });

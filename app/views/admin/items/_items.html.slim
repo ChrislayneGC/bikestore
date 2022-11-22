@@ -1,0 +1,36 @@
+- if params[:action] == "search"
+  .section.not-found styel="margin-bottom: 20px"
+    h3 Sua busca retornou <strong>#{pluralize(@count, 'Produto', 'Produtos')}</strong>.
+    = link_to 'Limpar busca', [:admin, :items], title: "Limpar busca"
+
+- if @items.any?
+  .data-accordion.section#accordion role="tablist"
+
+    - @items.each do |item|
+      .card
+        .card-header id="header-#{item.id}" role="tab"
+          = link_to "#{item.name}", "#collapse-#{item.id}", role: 'button', data: { toggle: 'collapse'}, aria: { expanded: 'true', controls: "collapse-#{item.id}"}
+          br
+          small #{item.subcategory} • #{item.price} • #{l(item.created_at, format: :short)}
+
+        .collapse id="collapse-#{item.id}" role="tabpanel" aria-labelledby="heading-#{item.id}" data-parent="#accordion"
+          .card-body
+            .row
+              .col-3
+                //= image_tag(item.s3_image.present? ? item.s3_image : "http://placehold.it/185x185", alt: item.to_s, class: "img-thumbnail img-responsive")
+                = link_to '<i class="icon icon-pencil"></i> Editar'.html_safe, [:edit_admin, item], title: "Editar", class: "edit btn-block", style: 'margin-top: 8px; text-align: center;'
+              .col-9
+                .row
+                  .col-5
+                    p <strong>Nome</strong><br>#{item.name}
+                  .col-4
+                    p
+                      | <strong>Categoria/Subcateogria</strong><br>
+                      | #{item.subcategory.category.name}<br>
+                      | |- #{item.subcategory}
+                  .col-3
+                    p <strong>Preço Base</strong><br> #{number_to_currency(item.price)} un.
+                / p <strong>Descrição</strong><br> #{item.description}
+- else
+  .section.not-found.text-center
+    h3 Desculpe, não existem itens para exibição.

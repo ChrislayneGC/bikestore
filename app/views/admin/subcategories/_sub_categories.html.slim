@@ -1,0 +1,24 @@
+- if params[:action] == "search"
+  .section.not-found style="margin-bottom: 20px;"
+    h3 Sua busca retornou <strong>#{pluralize(@count, 'Subcategoria', 'Subcategorias')}</strong>.
+    = link_to 'Limpar busca'.html_safe, [:admin, :subcategories], title: "Limpar busca"
+
+- if @subcategories.any?
+  table.table.data-table
+    thead.thead-light
+      tr
+        th Nome
+        th width="60"
+    tbody
+    - @subcategories.each do |subcategory|
+      tr
+        td
+          = link_to subcategory.name, [:edit_admin, subcategory], title: subcategory
+          br
+          small |- #{subcategory.category.name}
+        td.text-cener
+          = link_to '<i class="icon icon-pencil"></i>'.html_safe, [:edit_admin, subcategory], title: "Editar", class: "btn btn-info btn-sm"
+
+- else
+  .section.not-found.text-center
+    h3 Desculpe, não existem categorias para exibição.
